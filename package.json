@@ -1,5 +1,5 @@
 {
-    "name": "translator",
+    "name": "translation",
     "description": "Language Translation Framework for Applications & Web Sites",
     "version": "0.0.1",
     "author": {
@@ -24,7 +24,7 @@
     "main": "./lib/translator.js",
     "repository": {
         "type": "git",
-        "url": "git://github.com/aspectron/translator.git"
+        "url": "git://github.com/aspectron/translation.git"
     },
     "readmeFilename": "README.md"
 }

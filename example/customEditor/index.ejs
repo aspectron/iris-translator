@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <title><%= title %></title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/todc-bootstrap.min.css">
+    
+
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+
+    <script type="text/javascript" src="/js/vendors/jquery-2.1.0.js"></script>
+    <script type="text/javascript" src="/js/vendors/underscore.js"></script>
+    <script type="text/javascript" src="/js/vendors/jquery.autoresize.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="/js/vendors/bootstrap-paginator.min.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+</header>
+<body>
+
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="<%= baseUrl %>/"><%= title %></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="<%= baseUrl %>"><%= _T("Home") %></a></li>
+                <li><a id="export" href="#export"><%= _T("Export") %></a></li>
+                <li><a id="import" href="#import"><%= _T("Import") %></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Enabling languages <b class="caret"></b></a>
+                    <div id="enabling-language-list" class="dropdown-menu"></div>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= _T("Language") %> <b
+                                class="caret"></b></a>
+                    <ul id="ui-language-list" class="dropdown-menu"></ul>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+
+<div class="container">
+    <input id="search" type="text" class="form-control" placeholder="Search">
+    <div class="page-header clearfix">
+        <a class="rescan pull-right glyphicon glyphicon-refresh" href="<%= baseUrl %>/rescan"
+           title="<%= _T("RESCAN") %>"></a>
+    </div>
+
+    <div id="entry-list">
+
+    </div>
+
+    <ul id="pagination"></ul>
+</div>
+
+<script type="text/html" id='entry-box-template'>
+    <div class="entry {{= _orphan}} {{= _multiline}}" data-id="{{= hash}}">
+        <div class="info pull-left">
+            <p class="files">{{= _files}}</p>
+
+            <p class="category label label-info">{{= category}}</p>
+            <!-- <a class="hash" href="#{{= hash}}">{{= hash}}</a>-->
+        </div>
+        <div class="toolbar pull-right">
+            <a class="toggleMultiline glyphicon glyphicon-align-justify" href="#"
+               title="<%= _T("TOGGLE MULTILINE") %>"></a>
+            <a class="add glyphicon glyphicon-plus" href="#" title="<%= _T("ADD") %>"></a>
+            <a class="remove glyphicon glyphicon-remove" href="#" title="<%= _T("DELETE") %>"></a>
+        </div>
+
+        <div class="clearfix"></div>
+        <div class="translation-box">
+            {{ _.each(locale, function (lang, locale) { }}
+
+            <div class="field {{ if (locale == original) print('original') }} row" data-locale="{{= locale}}">
+                <span class="lang-title col-xs-1">{{= locale}}:</span>
+
+                <div class="translation col-xs-10" data-locale="{{= locale}}">{{= lang}}</div>
+                <button type="button" class="remove-locale btn btn-info btn-sm col-xs-1" data-locale="{{= locale}}"><%= _T("DELETE") %></button>
+            </div>
+
+            {{ }); }}
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id='new-language-box-template'>
+    <div class="field {{= original}} row" data-locale="{{= locale}}">
+        <span class="lang-title col-xs-1">{{= locale}}:</span>
+
+        <div class="translation col-xs-10" data-locale="{{= locale}}">{{= message}}</div>
+        <button type="button" class="remove-locale btn btn-info btn-sm col-xs-1"
+                data-locale="{{= locale}}"><%= _T("DELETE") %></button>
+    </div>
+</script>
+
+<script type="text/html" id='add-language-box-template'>
+    <div class="new-language-box">
+        <select name="language" class="col-xs-1">
+            {{ _.each(languages, function (lang, locale) { }}
+            <option value="{{= lang}}">{{= lang}}</option>
+            {{ }); }}
+        </select>
+
+        {{= input }}
+
+        <button type="button" class="cancel btn btn-warning pull-right col-xs-1"><%= _T("Cancel") %></button>
+        <button type="button" class="save btn btn-primary pull-right col-xs-1"><%= _T("Save") %></button>
+    </div>
+</script>
+
+<script type="text/html" id='language-button-box-template'>
+    <div id="languages-switcher" class="btn-group pull-left">
+        <button type="button" class="btn btn-default active" data-toggle="button"><%= _T("All") %></button>
+
+        {{ _.each(languages, function (lang, locale) { }}
+        <button type="button" class="btn btn-default" data-toggle="button" data-locale="{{= locale }}">{{= lang.name}}
+        </button>
+        {{ }); }}
+    </div>
+</script>
+
+<script type="text/html" id='remove-entry-message'>
+    <%= _T("ARE YOU SURE YOU WANT TO DELETE THIS ENTRY ?") %>
+
+    {{= message}}
+</script>
+
+<script type="text/html" id='remove-locale'>
+    <%= _T("ARE YOU SURE YOU WANT TO DELETE THIS LOCALE ?") %>
+
+    {{= message}}
+</script>
+
+<script type="text/html" id='languages-not-found-message'>
+    <%= _T("Extra supported languages not found") %>
+</script>
+
+<script type="text/html" id='ui-language'>
+    {{ _.each(languages, function (lang, locale) { }}
+    <li><a href="{{= url}}{{= locale }}">{{= lang.name }}</a></li>
+    {{ }); }}
+</script>
+
+<script type="text/html" id='enabling-language'>
+    {{ _.each(languages, function (lang, locale) { }}
+    <label data-href="{{= url}}{{= locale }}"> {{= lang.name }}
+        <input type="checkbox" {{ if (lang.enabled) print('checked') }}>
+    </label>
+    {{ }); }}
+</script>
+
+</body>
+</html>

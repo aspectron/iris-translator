@@ -1,0 +1,30 @@
+{
+    "name": "translator",
+    "description": "Language Translation Framework for Applications & Web Sites",
+    "version": "0.0.1",
+    "author": {
+        "name": "ASPECTRON Inc.",
+        "email": "contact@aspectron.com"
+    },
+    "keywords": [
+        "translator",
+        "language",
+        "ejs"
+    ],
+    "dependencies": {
+        "json": "*",
+        "express": "*",
+        "connect": "*",
+        "ejs": "*",
+        "underscore": "*",
+        "mkpath": "*",
+        "chokidar": "*",
+        "request": "*"
+    },
+    "main": "./lib/translator.js",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/aspectron/translator.git"
+    },
+    "readmeFilename": "README.md"
+}

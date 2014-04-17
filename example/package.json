@@ -1,0 +1,13 @@
+{
+  "name": "TranslatorExample",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "start": "node example.js"
+  },
+  "dependencies": {
+    "express": "*",
+    "connect": "*",
+    "ejs": "*"
+  }
+}

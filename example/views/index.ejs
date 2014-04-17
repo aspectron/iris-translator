@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+</head>
+<body>
+<div>
+    <% for (locale in languages) { %>
+    <a href="api/setlang/<%= locale %>"><%= languages[locale].name %></a>
+    <% } %>
+
+</div>
+
+<h1><%= title %> > <%= _T('Hello') %></h1>
+
+<p><%= _T('Lightweight simple translation module with dynamic json storage.') %></p>
+
+<p><%= _T('Uses common _T("...") syntax in app and templates.') %></p>
+
+<p><%= _T('Adds new strings on-the-fly when first used in your app.') %></p>
+
+<h2><%= _T('Example usage') %></h2>
+<pre><code>
+    req._T("Hello");
+</code></pre>
+
+<h2><%= _T('Load') %></h2>
+
+<pre><code>     var translator = require('translator');</code></pre>
+
+<h2><%= _T('Initialize') %></h2>
+<pre><code>
+    app.use(express.cookieParser('11e2-ab1f-0800200c9a66'));
+    app.use(express.session({
+        secret: 'a879d480-bf58-1b1f-0800200c9a66',
+    }));
+
+    app.use(translator.useSession);
+    // or
+    app.all('/:locale/*', translator.useUrl);
+
+    translator.init({
+        defaultLanguage: 'de',
+        languages: {
+            en: {
+                name: "English",
+                enabled: true
+            },
+            ru: {
+                name: "Русский",
+                enabled: false
+            },
+            de: {
+                name: "Deutsch"
+            },
+            it: {
+                name: "Italiano"
+            }
+        },
+        storagePath: __dirname + '/messages',
+        rootFolderPath: __dirname,
+        folders: ['views'],
+    }, function () {
+        http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
+            console.log('Express server listening on port ' + app.get('port'));
+        });
+    });
+</code></pre>
+<a href="configuration"><%= _T('List of configuration options') %></a>
+
+<h2>Builld-in Editor</h2>
+<p>Built-in editor helps you easily make translations.</p>
+<pre><code>
+    translator.runEditor({
+        port: 3030,
+        users: {
+        'admin': 'qwerty'
+        },
+        baseUrl: 'translator',
+        entriesOnPage: 7
+    }, function () {
+
+    });
+</code></pre>
+
+
+<p>If you use an editor in a different process or manual editing files</p>
+<pre><code>
+    translator.init({
+        storagePath: __dirname + '/messages',
+        rootFolderPath: __dirname,
+        folders: ['views']
+    }, function () {
+        translator.separateEditor();
+
+        http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
+            console.log('Express server listening on port ' + app.get('port'));
+        });
+    });
+</code></pre>
+
+<h2>Support for robots.txt and sitemap "out of the box"</h2>
+<pre><code>
+    app.get('/robots.txt', translator.robots({
+        denyUserAgent: ['yandex', 'rambler'],
+        allowDirectory: ['main']
+    }));
+
+    app.get('/sitemap.xml', translator.sitemap({
+        baseUrl: 'http://example.com',
+        displayDefaultLocale: false,
+        data: [
+            {
+                url: '',
+                changefreq: 'monthly',
+                priority: 1
+            },
+            {url: 'user'},
+            {url: 'profile'},
+            {
+                url: 'wall',
+                changefreq: 'daily',
+                priority: 0.7
+            }
+        ]
+    }));
+</code></pre>
+</body>
+</html>

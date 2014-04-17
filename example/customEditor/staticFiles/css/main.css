@@ -1,0 +1,144 @@
+select:focus,
+input[type="text"]:focus,
+textarea:focus {
+  outline: none;
+}
+a.glyphicon {
+  color: #5bc0de;
+  font-size: 16px;
+}
+.page-header {
+  margin: 20px 0 20px;
+}
+.page-header .rescan {
+  font-size: 22px;
+  margin: 5px 10px 0 0;
+}
+.toolbar a {
+  margin-right: 5px;
+}
+#entry-list .entry {
+  margin-bottom: 5px;
+  padding: 10px;
+  border: 1px #eeeeee solid;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+#entry-list .entry.orphan {
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+}
+#entry-list .entry.edit {
+  border: 2px #555555 solid;
+}
+#entry-list .entry .translation-box {
+  margin-top: 10px;
+}
+#entry-list .entry .translation-box .field {
+  margin: 5px 0 0;
+}
+#entry-list .entry .translation-box .field.original {
+  font-weight: bold;
+  font-size: 15px;
+}
+#entry-list .entry .translation-box .field:nth-child(even) .translation {
+  background: #c0f0ea;
+}
+#entry-list .entry .translation-box .field:nth-child(odd) .translation {
+  background: #f6fff6;
+}
+#entry-list .entry .translation-box .field .lang-title {
+  padding: 5px;
+  background: #fff400;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+}
+#entry-list .entry .translation-box .field .translation {
+  line-height: 30px;
+  min-height: 30px;
+}
+#entry-list .entry .translation-box .field .translation .input {
+  margin-top: 2px;
+  line-height: 20px;
+  width: 100%;
+}
+#entry-list .entry .translation-box .field .translation textarea {
+  resize: vertical;
+}
+#entry-list .entry .translation-box .field .remove-locale {
+  padding: 5px 3px;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+#entry-list .entry .new-language-box {
+  margin-top: 10px;
+}
+#entry-list .entry .new-language-box:before,
+#entry-list .entry .new-language-box:after {
+  content: " ";
+  display: table;
+}
+#entry-list .entry .new-language-box:after {
+  clear: both;
+}
+#entry-list .entry .new-language-box select {
+  height: 30px;
+  margin-right: -1px;
+  padding-left: 30px;
+  padding-right: 0;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  background: #fff400;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+#entry-list .entry .new-language-box textarea {
+  resize: vertical;
+  min-height: 30px;
+  resize: both;
+}
+#entry-list .entry .new-language-box input,
+#entry-list .entry .new-language-box textarea {
+  min-height: 30px;
+  max-width: 74%;
+  min-width: 200px;
+  line-height: 20px;
+}
+#entry-list .entry .new-language-box select,
+#entry-list .entry .new-language-box input,
+#entry-list .entry .new-language-box textarea {
+  display: inline-block;
+}
+#entry-list .entry .new-language-box button {
+  min-width: 60px;
+  margin-left: 15px;
+  height: 30px;
+  padding: 1px 8px;
+}
+#enabling-language-list label {
+  width: 94%;
+  margin: 0 5px 5px;
+}
+#enabling-language-list label:hover {
+  background: #eeeeee;
+}
+#enabling-language-list label input {
+  float: right;
+}
+#pagination {
+  display: block;
+  width: 500px;
+  height: 35px;
+  margin: 20px auto 40px;
+}
+a.disabled {
+  opacity: .3;
+  color: #777;
+}

@@ -1,0 +1,179 @@
+@import "../bootstrap/less/mixins.less";
+@import "local-variables.less";
+
+select, input[type="text"], textarea {
+  &:focus {
+    outline: none;
+  }
+}
+
+a.glyphicon {
+  color: @brand-info;
+  font-size: 16px;
+}
+
+.page-header {
+  margin: 20px 0 20px;
+
+  .rescan {
+    font-size: 22px;
+    margin: 5px 10px 0 0;
+  }
+}
+
+.toolbar {
+  a {
+    margin-right: 5px;
+  }
+}
+
+#entry-list {
+  .entry {
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px @gray-lighter solid;
+    .border-top-radius(5px);
+    .border-bottom-radius(5px);
+
+    &.orphan {
+      .opacity(.3);
+    }
+
+    &.edit {
+      border: 2px @gray solid;
+    }
+
+    .translation-box {
+      margin-top: 10px;
+
+      .field {
+        margin: 5px 0 0;
+
+        &.original {
+          font-weight: bold;
+          font-size: 15px;
+        }
+
+        &:nth-child(even) {
+          .translation {
+            background: #c0f0ea;
+          }
+        }
+
+        &:nth-child(odd) {
+          .translation {
+            background: #f6fff6;
+          }
+        }
+
+        .lang-title {
+          //width: 70px;
+          padding: 5px;
+          //margin-right: 5px;
+          background: @yellow;
+          .border-left-radius(5px);
+          font-weight: bold;
+          text-transform: uppercase;
+          text-align: center;
+        }
+        .translation {
+          //margin-left: 70px;
+          line-height: 30px;
+          min-height: 30px;
+          //padding: 5px 5px 5px 15px;
+
+          .input {
+            margin-top: 2px;
+            line-height: 20px;
+            width: 100%;
+          }
+
+          textarea {
+            resize: vertical;
+          }
+        }
+        .remove-locale {
+          padding: 5px 3px;
+          .border-left-radius(0);
+        }
+      }
+    }
+
+    .new-language-box {
+      margin-top: 10px;
+
+      &:before, &:after {
+        content: " ";
+        display: table;
+      }
+
+      &:after {
+        clear: both;
+      }
+
+      select {
+        //width: 70px;
+        height: 30px;
+        margin-right: -1px;
+        padding-left: 30px;
+        padding-right: 0;
+        .border-left-radius(5px);
+        .border-right-radius(0);
+        background: @yellow;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 30px;
+        resize: both;
+      }
+
+      input, textarea {
+        min-height: 30px;
+        max-width: 74%;
+        min-width: 200px;
+        line-height: 20px;
+      }
+
+      select, input, textarea {
+        display: inline-block;
+        //vertical-align: middle;
+      }
+
+      button {
+        min-width: 60px;
+        margin-left: 15px;
+        height: 30px;
+        padding: 1px 8px;
+      }
+    }
+  }
+}
+
+#enabling-language-list {
+  label {
+    width: 94%;
+    margin: 0 5px 5px;
+
+    &:hover {
+      background: @gray-lighter;
+    }
+    input {
+      float: right;
+    }
+  }
+}
+
+#pagination {
+  display: block;
+  width: 500px;
+  height: 35px;
+  margin: 20px auto 40px;
+}
+
+a.disabled {
+  opacity: .3;
+  color: #777;
+}

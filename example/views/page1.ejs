@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+</head>
+<body>
+<a href="/"><%= _T('Back') %></a>
+
+<h1><%= _T("Configuration options") %></h1>
+
+<pre><code>
+    {
+        // the language that user will see at the first visit
+        defaultLanguage: 'de',
+
+        languages: {
+            en: {
+                name: "English",
+                enabled: true
+            },
+            it: {
+                name: "Italiano"
+            }
+        },
+
+        // the language that the source messages are written in
+        sourceLanguage: 'en',
+
+        //
+        basicCategory: 'basic',
+
+        // where to store json file
+        storagePath: __dirname + '/messages',
+
+        // path to root folder where placed folders for parsing
+        rootFolderPath: __dirname,
+
+        // folders that must be parsed
+        folders: ['views', 'templates']
+
+        fileExtensions: ['js', 'ejs', 'jade']
+
+        //or you can pass folder and file extenions in single place, it provide a way to told extensions for folders seperatly
+        //folders:{'folder_name':'js,ejs', 'another_folder':'html'}
+    }
+</code></pre>
+</body>
+</html>

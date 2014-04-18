@@ -26,7 +26,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', function (req, res) {
-    res.render('index', {_T: req._T, title: 'translator', languages: translator.getEnabledLanguages(), language: req.params.locale});
+    res.render('index', {_T: req._T, title: 'translator', varFromJs: req._T("A Variable Value"), languages: translator.getEnabledLanguages(), language: req.params.locale});
 });
 
 app.get('/configuration', function (req, res) {

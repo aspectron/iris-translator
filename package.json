@@ -1,7 +1,7 @@
 {
     "name": "translation",
     "description": "Language Translation Framework for Applications & Web Sites",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": {
         "name": "ASPECTRON Inc.",
         "email": "info@aspectron.com"

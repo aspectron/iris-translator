@@ -1,18 +1,18 @@
 {
-    "en": {
-        "name": "English",
-        "enabled": true
-    },
-    "ru": {
-        "name": "Русский",
-        "enabled": true
-    },
-    "de": {
-        "name": "Deutsch",
-	"enabled": true
-    },
-    "it": {
-        "name": "Italiano",
-	"enabled": true
-    }
+	"en": {
+		"name": "English",
+		"enabled": true
+	},
+	"ru": {
+		"name": "Русский",
+		"enabled": true
+	},
+	"de": {
+		"name": "Deutsch",
+		"enabled": true
+	},
+	"it": {
+		"name": "Italiano",
+		"enabled": true
+	}
 }

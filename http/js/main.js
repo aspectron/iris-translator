@@ -5,9 +5,8 @@ var underscore = _.noConflict();
         init: function () {
             var self = this;
             this.locale = '';
-            this.languages = [];
+            this.languages = {};
             this.searchString = null;
-            this.filter = [];
 
             //this.baseUrl = document.URL;
             this.baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
@@ -22,14 +21,10 @@ var underscore = _.noConflict();
 
             this.langButtonBoxTemplate = $('#language-button-box-template').html();
             this.entryBoxTemplate = $('#entry-box-template').html();
-            this.addLanguageBoxTemplate = $('#add-language-box-template').html();
-            this.newLanguageBoxTemplate = $('#new-language-box-template').html();
             this.uiLanguageTemplate = $('#ui-language').html();
             this.enablingLanguageTemplate = $('#enabling-language').html();
-            this.removeLocaleTemplate = $('#remove-locale').html();
 
             this.removeEntryMessage = $('#remove-entry-message').html();
-            this.extraLanguageNotFoundMessage = $('#languages-not-found-message').html();
 
             this.$paginationBox = $('#pagination');
 
@@ -38,6 +33,8 @@ var underscore = _.noConflict();
 
             this.$searchField = $('#search');
             this.$searchClearButton = $('#search-clear');
+
+
             // binds handlers
             $('body').on('click', '#filter button', this.filters);
             $('#enabling-language-list').on('click', 'label', this.enablingLanguage);
@@ -47,8 +44,8 @@ var underscore = _.noConflict();
                 return false;
             });
 
-            $('body').on('click', '#export', this.exports);
-            $('body').on('click', '#import', this.imports);
+            $('#export').on('click', this.exports);
+            $('#import').on('click', this.imports);
 
             this.$searchField.on('blur', this.search);
             this.$searchField.on('keydown', function (event) {
@@ -61,15 +58,11 @@ var underscore = _.noConflict();
 
             this.$entryBox.on('click', '.translation', this.edit);
             this.$entryBox.on('click', '.toggleMultiline', this.toggleMultiline);
-            this.$entryBox.on('click', '.add', this.add);
             this.$entryBox.on('click', '.remove', this.remove);
-            this.$entryBox.on('click', '.remove-locale', this.deleteLocale);
             this.$entryBox.on('click', '.input', function (event) {
                 event.stopPropagation();
             });
             this.$entryBox.on('blur', '.input', this.update);
-            this.$entryBox.on('click', '.save', this.saveNewTranslation);
-            this.$entryBox.on('click', '.cancel', this.cancelNewTranslation);
             this.$entryBox.on('keydown', 'input[type=text].input', function (event) {
                 if (event.which == keyCode.ENTER || event.which == keyCode.ESCAPE) {
                     event.stopPropagation();
@@ -174,11 +167,15 @@ var underscore = _.noConflict();
         },
 
         renderEntry: function (entry) {
+            var data = {
+                entry: entry,
+                languages: this.languages
+            };
             entry._multiline = entry.multiline ? 'multiline' : '';
             entry._orphan = entry.orphan ? 'orphan' : '';
             entry._files = entry.files ? entry.files.join(' | ') : '';
 
-            return _.template(this.entryBoxTemplate, entry);
+            return _.template(this.entryBoxTemplate, data);
         },
 
         renderPaginator: function (totalNumber, itemsOnPage) {
@@ -194,7 +191,7 @@ var underscore = _.noConflict();
                 onPageChanged: function (event, oldPage, newPage) {
                     var skip = (newPage - 1) * itemsOnPage;
 
-                    self.getEntries(self.filter, self.searchString, skip, itemsOnPage, function (err, data) {
+                    self.getEntries(self.searchString, skip, itemsOnPage, function (err, data) {
                         if (err) console.log(err);
 
                         self.entries = data.entries;
@@ -221,7 +218,7 @@ var underscore = _.noConflict();
 
             app.searchString = q;
 
-            app.getEntries(app.filter, q, function (err, data) {
+            app.getEntries(q, function (err, data) {
                 if (err) console.log(err);
 
                 app.entries = data.entries;
@@ -256,54 +253,16 @@ var underscore = _.noConflict();
         },
 
         filters: function (event) {
-            event.stopPropagation();
-
-            app.filter = [];
-
             var $button = $(this);
-            var $buttons = $button.parent('div').find('button');
+            var locale = $button.data('locale');
 
-            // click on all languages button
-            if (!$button.data('locale')) {
-                if (!$button.hasClass('active')) {
-                    $buttons.removeClass('active');
-                    $button.addClass('active');
-
-                    app.filter = [];
-                } else {
-                    return false;
-                }
+            if (!$button.hasClass('active')) {
+                app.languages[locale].hide = true;
             } else {
-                var $allLanguageButton = $buttons.filter(':not([data-locale])');
-
-                if (!$button.hasClass('active')) {
-                    if ($allLanguageButton.hasClass('active')) {
-                        $allLanguageButton.removeClass('active');
-                    }
-                    $button.addClass('active');
-                } else {
-                    $button.removeClass('active');
-
-                    if ($buttons.filter('.active').length == 0) {
-                        $allLanguageButton.trigger('click');
-                        return true;
-                    }
-                }
-
-                $buttons.filter('.active').each(function () {
-                    var locale = $(this).data('locale');
-
-                    app.filter.push(locale)
-                });
+                app.languages[locale].hide = false;
             }
 
-            app.getEntries(app.filter, app.searchString, function (err, data) {
-                if (err) console.log(err);
-
-                app.entries = data.entries;
-
-                app.render(data);
-            });
+            app.renderEntries(app.entries);
         },
 
         edit: function (event) {
@@ -383,75 +342,6 @@ var underscore = _.noConflict();
             });
         },
 
-        add: function (event) {
-            event.preventDefault();
-
-            $('.cancel').click();
-
-            var $container = $(this).parents('.entry');
-
-            var hash = $container.data('id');
-            var entry = app.entries[hash];
-
-            var existingLanguages = _.keys(app.entries[hash].locale);
-            var languages = _.keys(app.languages);
-            var allowLanguages = _.difference(languages, existingLanguages);
-
-            if (!allowLanguages.length) return alert(_.template(app.extraLanguageNotFoundMessage, {}));
-
-            var input = '';
-            if (entry.multiline) {
-                input = '<textarea class="new-input col-xs-8"></textarea>';
-            } else {
-                input = '<input class="new-input col-xs-8" type="text"/>';
-            }
-
-            $container.append(_.template(app.addLanguageBoxTemplate, {
-                languages: allowLanguages,
-                input: input
-            }));
-
-            var $input = $container.find('.new-input');
-
-            $input.autoResize(); // for auto resize of textarea
-
-            $input.focus();
-        },
-
-        saveNewTranslation: function (event) {
-            var $wrapper = $(this).parent('.new-language-box');
-
-            var $container = $wrapper.parents('.entry');
-            var hash = $container.data('id');
-
-            var $input = $wrapper.find('.new-input');
-            var locale = $wrapper.find('select').val();
-            var message = _.unescape($input.val());
-
-            $wrapper.remove();
-
-            if (!message.length) {
-                return false;
-            }
-
-            app.entries[hash].locale[locale] = message;
-
-            app.updateEntry(hash, locale, function (err) {
-                if (err) return alert(err);
-
-                $container.find('.translation-box').append(_.template(app.newLanguageBoxTemplate, {
-                    original: '',
-                    locale: locale,
-                    message: message
-                }));
-            });
-        },
-
-        cancelNewTranslation: function () {
-            var $wrapper = $(this).parent('.new-language-box');
-            $wrapper.remove();
-        },
-
         remove: function (event) {
             event.preventDefault();
 
@@ -473,32 +363,6 @@ var underscore = _.noConflict();
             }
         },
 
-        deleteLocale: function (event) {
-            event.preventDefault();
-
-            $self = $(this);
-
-            var $entryContainer = $self.parents('.entry');
-            var $container = $self.parents('.field');
-
-            var hash = $entryContainer.data('id');
-            var locale = $self.data('locale');
-
-            var entry = app.entries[hash];
-
-            var message = entry.locale[locale].substring(0, 24);
-
-            if (confirm(_.template(app.removeLocaleTemplate, {message: message}))) {
-                app.removeLocale(hash, locale, function (err) {
-                    if (err) return alert(err);
-
-                    delete app.entries[hash].locale[locale];
-
-                    $container.remove();
-                });
-            }
-        },
-
         getLanguages: function (callback) {
             $.ajax({
                 url: this.getBaseUrl() + '/languages',
@@ -511,11 +375,8 @@ var underscore = _.noConflict();
             });
         },
 
-        getEntries: function (filter, query, skip, limit, callback) {
-            if (typeof filter === 'function') {
-                callback = filter;
-                filter = null;
-            } else if (typeof query === 'function') {
+        getEntries: function (query, skip, limit, callback) {
+            if (typeof query === 'function') {
                 callback = query;
                 query = null;
             } else if (typeof skip === 'function') {
@@ -529,11 +390,6 @@ var underscore = _.noConflict();
             var url = this.getEntryUrl() + '?q=';
             url += query ? encodeURIComponent(query) : '';
 
-            if (filter && filter.length) {
-                filter.forEach(function (e) {
-                    url += '&filter[]=' + encodeURIComponent(e);
-                });
-            }
             url += '&skip=' + (skip ? encodeURIComponent(skip) : '');
             url += '&limit=' + (limit ? encodeURIComponent(limit) : '');
 

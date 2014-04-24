@@ -70,58 +70,6 @@ a.glyphicon {
 #entry-list .entry .translation-box .field .translation textarea {
   resize: vertical;
 }
-#entry-list .entry .translation-box .field .remove-locale {
-  padding: 5px 3px;
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-}
-#entry-list .entry .new-language-box {
-  margin-top: 10px;
-}
-#entry-list .entry .new-language-box:before,
-#entry-list .entry .new-language-box:after {
-  content: " ";
-  display: table;
-}
-#entry-list .entry .new-language-box:after {
-  clear: both;
-}
-#entry-list .entry .new-language-box select {
-  height: 30px;
-  margin-right: -1px;
-  padding-left: 30px;
-  padding-right: 0;
-  border-bottom-left-radius: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  background: #fff400;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-#entry-list .entry .new-language-box textarea {
-  resize: vertical;
-  min-height: 30px;
-  resize: both;
-}
-#entry-list .entry .new-language-box input,
-#entry-list .entry .new-language-box textarea {
-  min-height: 30px;
-  max-width: 74%;
-  min-width: 200px;
-  line-height: 20px;
-}
-#entry-list .entry .new-language-box select,
-#entry-list .entry .new-language-box input,
-#entry-list .entry .new-language-box textarea {
-  display: inline-block;
-}
-#entry-list .entry .new-language-box button {
-  min-width: 60px;
-  margin-left: 15px;
-  height: 30px;
-  padding: 1px 8px;
-}
 #enabling-language-list label {
   width: 94%;
   margin: 0 5px 5px;

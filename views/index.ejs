@@ -96,7 +96,9 @@
                 <span class="lang-title col-xs-1">{{= locale}}:</span>
 
                 <div class="translation col-xs-10" data-locale="{{= locale}}">{{= lang}}</div>
+                {{ if (locale !== original) { }}
                 <button type="button" class="remove-locale btn btn-info btn-sm col-xs-1" data-locale="{{= locale}}"><%= _T("DELETE") %></button>
+                {{ } }}
             </div>
 
             {{ }); }}
@@ -130,7 +132,7 @@
 </script>
 
 <script type="text/html" id='language-button-box-template'>
-    <div id="languages-switcher" class="btn-group pull-left">
+    <div id="filter" class="btn-group pull-left">
         <button type="button" class="btn btn-default active" data-toggle="button"><%= _T("All") %></button>
 
         {{ _.each(languages, function (lang, locale) { }}

@@ -7,6 +7,7 @@ var underscore = _.noConflict();
             this.locale = '';
             this.languages = [];
             this.searchString = null;
+            this.filter = [];
 
             //this.baseUrl = document.URL;
             this.baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
@@ -36,9 +37,10 @@ var underscore = _.noConflict();
             this.$importButton = $('#import');
 
             // binds handlers
-            $('body').on('click', '#languages-switcher button', this.switchLanguageDisplay);
+            $('body').on('click', '#filter button', this.filters);
             $('#enabling-language-list').on('click', 'label', this.enablingLanguage);
             $('body').on('click', '#export', this.exports);
+            $('body').on('click', '#import', this.imports);
 
             var $search = $('#search');
             $search.on('blur', this.search);
@@ -96,7 +98,7 @@ var underscore = _.noConflict();
         },
 
         getEntryUrl: function () {
-            return this.getBaseUrl() + '/entry';
+            return this.getBaseUrl() + '/entry/';
         },
 
         getBaseUrl: function () {
@@ -184,7 +186,7 @@ var underscore = _.noConflict();
                 onPageChanged: function (event, oldPage, newPage) {
                     var skip = (newPage - 1) * itemsOnPage;
 
-                    self.getEntries(self.searchString, skip, itemsOnPage, function (err, data) {
+                    self.getEntries(self.filter, self.searchString, skip, itemsOnPage, function (err, data) {
                         if (err) console.log(err);
 
                         self.entries = data.entries;
@@ -211,7 +213,7 @@ var underscore = _.noConflict();
 
             app.searchString = q;
 
-            app.getEntries(q, function (err, data) {
+            app.getEntries(app.filter, q, function (err, data) {
                 if (err) console.log(err);
 
                 app.entries = data.entries;
@@ -238,42 +240,55 @@ var underscore = _.noConflict();
             return false;
         },
 
-        switchLanguageDisplay: function (event) {
+        filters: function (event) {
+            event.stopPropagation();
+
+            app.filter = [];
+
             var $button = $(this);
             var $buttons = $button.parent('div').find('button');
 
             // click on all languages button
             if (!$button.data('locale')) {
                 if (!$button.hasClass('active')) {
-                    $('.field').removeClass('hidden');
                     $buttons.removeClass('active');
+                    $button.addClass('active');
+
+                    app.filter = [];
                 } else {
                     return false;
                 }
             } else {
-                var locale = $button.data('locale');
                 var $allLanguageButton = $buttons.filter(':not([data-locale])');
 
                 if (!$button.hasClass('active')) {
                     if ($allLanguageButton.hasClass('active')) {
                         $allLanguageButton.removeClass('active');
-                        $('.field[data-locale != "' + locale + '"]').addClass('hidden');
-                    } else {
-                        $('.field[data-locale = "' + locale + '"]').removeClass('hidden');
                     }
+                    $button.addClass('active');
                 } else {
-                    if ($buttons.filter('.active').length == 1) {
-                        $allLanguageButton.click();
-                        return false;
-                    } else {
-                        $('.field[data-locale = "' + locale + '"]').addClass('hidden');
+                    $button.removeClass('active');
+
+                    if ($buttons.filter('.active').length == 0) {
+                        $allLanguageButton.trigger('click');
+                        return true;
                     }
                 }
+
+                $buttons.filter('.active').each(function () {
+                    var locale = $(this).data('locale');
+
+                    app.filter.push(locale)
+                });
             }
 
-            var entry = $('.entry');
-            entry.has('.field.hidden').hide();
-            entry.has('.field:not(.hidden)').show();
+            app.getEntries(app.filter, app.searchString, function (err, data) {
+                if (err) console.log(err);
+
+                app.entries = data.entries;
+
+                app.render(data);
+            });
         },
 
         edit: function (event) {
@@ -443,7 +458,6 @@ var underscore = _.noConflict();
             }
         },
 
-
         deleteLocale: function (event) {
             event.preventDefault();
 
@@ -482,8 +496,11 @@ var underscore = _.noConflict();
             });
         },
 
-        getEntries: function (query, skip, limit, callback) {
-            if (typeof query === 'function') {
+        getEntries: function (filter, query, skip, limit, callback) {
+            if (typeof filter === 'function') {
+                callback = filter;
+                filter = null;
+            } else if (typeof query === 'function') {
                 callback = query;
                 query = null;
             } else if (typeof skip === 'function') {
@@ -494,8 +511,15 @@ var underscore = _.noConflict();
                 limit = null;
             }
 
-            var url = query ? this.getEntryUrl() + '/' + encodeURIComponent(query) : this.getEntryUrl();
-            url += '?skip=' + (skip ? encodeURIComponent(skip) : '');
+            var url = this.getEntryUrl() + '?q=';
+            url += query ? encodeURIComponent(query) : '';
+
+            if (filter && filter.length) {
+                filter.forEach(function (e) {
+                    url += '&filter[]=' + encodeURIComponent(e);
+                });
+            }
+            url += '&skip=' + (skip ? encodeURIComponent(skip) : '');
             url += '&limit=' + (limit ? encodeURIComponent(limit) : '');
 
             $.ajax({
@@ -536,7 +560,7 @@ var underscore = _.noConflict();
 
         removeEntry: function (hash, callback) {
             $.ajax({
-                url: this.getEntryUrl() + '/' + hash,
+                url: this.getEntryUrl() + hash,
                 type: 'DELETE',
                 dataType: "json"
             }).done(function () {
@@ -548,7 +572,7 @@ var underscore = _.noConflict();
 
         removeLocale: function (hash, locale, callback) {
             $.ajax({
-                url: this.getEntryUrl() + '/' + hash + '/' + locale,
+                url: this.getEntryUrl() + hash + '/' + locale,
                 type: 'DELETE',
                 dataType: 'json'
             }).done(function () {
@@ -578,9 +602,38 @@ var underscore = _.noConflict();
                     cache: false,
                     timeout: 60000
                 }).done(function () {
-                    alert('Data are exported to Transifex');
+                    alert('Data are exported to Transifex.');
                 }).fail(function () {
-                    alert('Data can not be exported to Transifex. \n Please contact the administrator');
+                    alert('Data can not be exported to Transifex. \n Please contact the administrator.');
+                }).always(function () {
+                    app.enableExportImport();
+                });
+            }
+        },
+
+        imports: function (event) {
+            var url = app.getBaseUrl() + '/import';
+            var $self = $(this);
+
+            if (!$self.hasClass('disabled')) {
+                app.disableExportImport();
+
+                doRequest();
+            }
+
+            return false;
+
+            function doRequest() {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    cache: false,
+                    timeout: 60000
+                }).done(function () {
+                    alert('Data are imported from Transifex. \n Please reload the page.');
+                }).fail(function () {
+                    alert('Data can not be imported from Transifex. \n Please contact the administrator.');
                 }).always(function () {
                     app.enableExportImport();
                 });

@@ -41,6 +41,12 @@ var underscore = _.noConflict();
             // binds handlers
             $('body').on('click', '#filter button', this.filters);
             $('#enabling-language-list').on('click', 'label', this.enablingLanguage);
+            $('#close-enabling-language-list').on('click', function () {
+                $(body).focus();
+
+                return false;
+            });
+
             $('body').on('click', '#export', this.exports);
             $('body').on('click', '#import', this.imports);
 

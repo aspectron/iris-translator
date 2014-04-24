@@ -33,12 +33,7 @@ translator.runEditor({
     storagePath: __dirname + '/messages/',
     rootFolderPath: __dirname,
     folders: ['views'],
-    transifex: {
-        user: 'translator.transifex.test@gmail.com',
-        password: 'qp7g2l9b58',
-        projectSlug: 'jazz',
-        resourceSlug: 'first-file'
-    }
+
 }, function () {
 
 });

@@ -603,8 +603,12 @@ var underscore = _.noConflict();
                     timeout: 60000
                 }).done(function () {
                     alert('Data are exported to Transifex.');
-                }).fail(function () {
-                    alert('Data can not be exported to Transifex. \n Please contact the administrator.');
+                }).fail(function (jqXHR) {
+                    if (jqXHR.status == 405) {
+                        alert('Export to Transifex is not configured. \n Please contact the administrator.');
+                    } else {
+                        alert('Data can not be exported to Transifex. \n Please contact the administrator.');
+                    }
                 }).always(function () {
                     app.enableExportImport();
                 });
@@ -632,8 +636,12 @@ var underscore = _.noConflict();
                     timeout: 60000
                 }).done(function () {
                     alert('Data are imported from Transifex. \n Please reload the page.');
-                }).fail(function () {
-                    alert('Data can not be imported from Transifex. \n Please contact the administrator.');
+                }).fail(function (jqXHR) {
+                    if (jqXHR.status == 405) {
+                        alert('Import from Transifex is not configured. \n Please contact the administrator.');
+                    } else {
+                        alert('Data can not be imported from Transifex. \n Please contact the administrator.');
+                    }
                 }).always(function () {
                     app.enableExportImport();
                 });

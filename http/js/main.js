@@ -271,6 +271,10 @@ var underscore = _.noConflict();
             var tr = $(this);
             if (tr.children('.input').length) return false;
 
+            if (tr.parent('.field').hasClass('original')) {
+                return false
+            }
+
             var $container = $(this).parents('.entry');
             var hash = $container.data('id');
             var entry = app.entries[hash];
@@ -317,14 +321,12 @@ var underscore = _.noConflict();
                     if (err) return alert(err);
                 });
             } else {
-                $tr.html(app.entries[hash].locale[locale]);
+                $tr.html(app.entries[hash].locale[locale] || '');
             }
         },
 
         toggleMultiline: function (event) {
             event.preventDefault();
-
-            $('.cancel').click();
 
             var $container = $(this).parents('.entry');
             var hash = $container.data('id');

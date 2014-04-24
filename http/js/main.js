@@ -36,20 +36,22 @@ var underscore = _.noConflict();
             this.$exportButton = $('#export');
             this.$importButton = $('#import');
 
+            this.$searchField = $('#search');
+            this.$searchClearButton = $('#search-clear');
             // binds handlers
             $('body').on('click', '#filter button', this.filters);
             $('#enabling-language-list').on('click', 'label', this.enablingLanguage);
             $('body').on('click', '#export', this.exports);
             $('body').on('click', '#import', this.imports);
 
-            var $search = $('#search');
-            $search.on('blur', this.search);
-            $search.on('keydown', function (event) {
+            this.$searchField.on('blur', this.search);
+            this.$searchField.on('keydown', function (event) {
                 if (event.which == keyCode.ENTER) {
                     event.stopPropagation();
                     $(this).blur();
                 }
             });
+            this.$searchClearButton.on('click', this.clearSearchField);
 
             this.$entryBox.on('click', '.translation', this.edit);
             this.$entryBox.on('click', '.toggleMultiline', this.toggleMultiline);
@@ -222,6 +224,13 @@ var underscore = _.noConflict();
 
                 $('#languages-switcher button').first().click();
             });
+        },
+
+        clearSearchField: function () {
+            app.$searchField.val('');
+            app.$searchField.trigger('blur');
+
+            return false;
         },
 
         enablingLanguage: function (event) {

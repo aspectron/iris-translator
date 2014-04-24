@@ -60,7 +60,11 @@
 
 
 <div class="container">
-    <input id="search" type="text" class="form-control" placeholder="Search">
+    <div class="form-group search-box">
+        <input id="search" type="text" class="form-control" placeholder="Search">
+        <span id="search-clear" class="glyphicon glyphicon-remove-circle"></span>
+    </div>
+
     <div class="page-header clearfix">
         <a class="rescan pull-right glyphicon glyphicon-refresh" href="<%= baseUrl %>/rescan"
            title="<%= _T("RESCAN") %>"></a>

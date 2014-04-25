@@ -1,98 +1,26 @@
 var underscore = _.noConflict();
 
 (function ($, _) {
-    var app = {
-        init: function () {
-            var self = this;
-            this.locale = '';
-            this.languages = {};
-            this.searchString = null;
+    function App() {
+        var self = this;
 
-            //this.baseUrl = document.URL;
-            this.baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+        self.locale = '';
+        self.languages = {};
+        self.searchString = null;
 
-            this.entries = {};
-            this.itemsOnPage = null;
+        //self.baseUrl = document.URL;
+        self.baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
+        self.entries = {};
+        self.itemsOnPage = null;
 
-            this.$pageHeader = $('.page-header');
-            this.$entryBox = $('#entry-list');
-            this.$uiLanguageBox = $('#ui-language-list');
-            this.$enablingLanguageBox = $('#enabling-language-list');
+        self.init = function () {
+            self.cacheElements();
+            self.bindEvents();
 
-            this.langButtonBoxTemplate = $('#language-button-box-template').html();
-            this.entryBoxTemplate = $('#entry-box-template').html();
-            this.uiLanguageTemplate = $('#ui-language').html();
-            this.enablingLanguageTemplate = $('#enabling-language').html();
+            self.initAjax();
 
-            this.removeEntryMessage = $('#remove-entry-message').html();
-
-            this.$paginationBox = $('#pagination');
-
-            this.$exportButton = $('#export');
-            this.$importButton = $('#import');
-
-            this.$searchField = $('#search');
-            this.$searchClearButton = $('#search-clear');
-
-            this.$itemsOnPage = $('#items-on-page');
-
-            // binds handlers
-            $('body').on('click', '#filter button', this.filters);
-            $('#enabling-language-list').on('click', 'label', this.enablingLanguage);
-            $('#close-enabling-language-list').on('click', function () {
-                $(body).focus();
-
-                return false;
-            });
-
-            $('#export').on('click', this.exports);
-            $('#import').on('click', this.imports);
-
-            this.$searchField.on('blur', this.search);
-            this.$searchField.on('keydown', function (event) {
-                if (event.which == keyCode.ENTER) {
-                    event.stopPropagation();
-                    $(this).blur();
-                }
-            });
-            this.$searchClearButton.on('click', this.clearSearchField);
-
-            this.$entryBox.on('click', '.translation', this.edit);
-            this.$entryBox.on('click', '.toggleMultiline', this.toggleMultiline);
-            this.$entryBox.on('click', '.remove', this.remove);
-            this.$entryBox.on('click', '.input', function (event) {
-                event.stopPropagation();
-            });
-            this.$entryBox.on('blur', '.input', this.update);
-            this.$entryBox.on('keydown', 'input[type=text].input', function (event) {
-                if (event.which == keyCode.ENTER || event.which == keyCode.ESCAPE) {
-                    event.stopPropagation();
-                    $(this).blur();
-                }
-            });
-            this.$entryBox.on('keydown', 'textarea.input', function (event) {
-                if (event.which == keyCode.ESCAPE) {
-                    event.stopPropagation();
-                    $(this).blur();
-                }
-            });
-
-            this.$itemsOnPage.change(function() {
-                app.itemsOnPage = $(this).val();
-
-                app.getEntries(app.searchString, null, app.itemsOnPage, function (err, data) {
-                    if (err) console.log(err);
-
-                    app.entries = data.entries;
-
-                    app.render(data);
-                });
-            });
-
-            this.initAjax();
-
-            this.getLanguages(function (err, languages) {
+            self.getLanguages(function (err, languages) {
                 if (err) return false;
 
                 self.languages = languages;
@@ -102,31 +30,97 @@ var underscore = _.noConflict();
                 self.renderEnablingLanguages();
             });
 
-            this.getEntries(function (err, data) {
+            self.getEntries(function (err, data) {
                 if (err) console.log(err);
 
                 self.entries = data.entries;
                 self.itemsOnPage = data.entriesOnPage;
 
-                self.$itemsOnPage.find('[value= '+ self.itemsOnPage +']').prop('selected', true);
+                self.$itemsOnPage.find('[value= ' + self.itemsOnPage + ']').prop('selected', true);
 
                 self.render(data);
             });
-        },
+        };
 
-        getEntryUrl: function () {
-            return this.getBaseUrl() + '/entry/';
-        },
+        self.cacheElements = function () {
+            self.$pageHeader = $('.page-header');
+            self.$entryBox = $('#entry-list');
+            self.$uiLanguageBox = $('#ui-language-list');
+            self.$enablingLanguageBox = $('#enabling-language-list');
 
-        getBaseUrl: function () {
-            if (this.baseUrl.slice(-1) == '/') {
-                this.baseUrl = this.baseUrl.slice(0, -1);
-            }
+            self.langButtonBoxTemplate = $('#language-button-box-template').html();
+            self.entryBoxTemplate = $('#entry-box-template').html();
+            self.uiLanguageTemplate = $('#ui-language').html();
+            self.enablingLanguageTemplate = $('#enabling-language').html();
 
-            return this.baseUrl;
-        },
+            self.removeEntryMessage = $('#remove-entry-message').html();
 
-        initAjax: function () {
+            self.$paginationBox = $('#pagination');
+
+            self.$exportButton = $('#export');
+            self.$importButton = $('#import');
+
+            self.$searchField = $('#search');
+            self.$searchClearButton = $('#search-clear');
+
+            self.$itemsOnPage = $('#items-on-page');
+        };
+
+        self.bindEvents = function () {
+            $('body').on('click', '#filter button', self.filters);
+            $('#enabling-language-list').on('click', 'label', self.enablingLanguage);
+            $('#close-enabling-language-list').on('click', function () {
+                $(body).focus();
+
+                return false;
+            });
+
+            $('#export').on('click', self.exports);
+            $('#import').on('click', self.imports);
+
+            self.$searchField.on('blur', self.search);
+            self.$searchField.on('keydown', function (e) {
+                if (e.which == keyCode.ENTER) {
+                    e.stopPropagation();
+                    $(e.target).blur();
+                }
+            });
+            self.$searchClearButton.on('click', self.clearSearchField);
+
+            self.$entryBox.on('click', '.translation', self.edit);
+            self.$entryBox.on('click', '.toggleMultiline', self.toggleMultiline);
+            self.$entryBox.on('click', '.remove', self.remove);
+            self.$entryBox.on('click', '.input', function (e) {
+                e.stopPropagation();
+            });
+            self.$entryBox.on('blur', '.input', self.update);
+            self.$entryBox.on('keydown', 'input[type=text].input', function (e) {
+                if (e.which == keyCode.ENTER || e.which == keyCode.ESCAPE) {
+                    e.stopPropagation();
+                    $(e.target).blur();
+                }
+            });
+            self.$entryBox.on('keydown', 'textarea.input', function (e) {
+                if (e.which == keyCode.ESCAPE) {
+                    e.stopPropagation();
+                    $(e.target).blur();
+                }
+            });
+
+            self.$itemsOnPage.on('change', function (e) {
+                self.itemsOnPage = $(e.target).val();
+
+                self.getEntries(self.searchString, null, self.itemsOnPage, function (err, data) {
+                    if (err) console.log(err);
+
+                    self.entries = data.entries;
+
+                    self.render(data);
+                });
+            });
+        };
+
+        self.initAjax = function () {
             $(document).ajaxError(function (event, request, settings) {
                 switch (request.status) {
                     case 403:
@@ -134,16 +128,27 @@ var underscore = _.noConflict();
                         break;
                 }
             });
-        },
+        };
 
-        render: function (data) {
-            this.renderEntries(data.entries);
+        self.getBaseUrl = function () {
+            if (self.baseUrl.slice(-1) == '/') {
+                self.baseUrl = self.baseUrl.slice(0, -1);
+            }
 
-            this.renderPaginator(data.totalNumber, this.itemsOnPage);
-        },
+            return self.baseUrl;
+        };
 
-        renderEntries: function (entries) {
-            var self = this;
+        self.getEntryUrl = function () {
+            return self.getBaseUrl() + '/entry/';
+        };
+
+        self.render = function (data) {
+            self.renderEntries(data.entries);
+
+            self.renderPaginator(data.totalNumber, self.itemsOnPage);
+        };
+
+        self.renderEntries = function (entries) {
             self.$entryBox.empty();
 
             var htmlParts = [];
@@ -168,34 +173,33 @@ var underscore = _.noConflict();
 
 
             self.$entryBox.html(htmlParts.join(''));
-        },
+        };
 
-        renderLangButtons: function () {
-            this.$pageHeader.prepend(_.template(this.langButtonBoxTemplate, {languages: this.languages}));
-        },
+        self.renderLangButtons = function () {
+            self.$pageHeader.prepend(_.template(self.langButtonBoxTemplate, {languages: self.languages}));
+        };
 
-        renderUILanguages: function () {
-            this.$uiLanguageBox.html(_.template(this.uiLanguageTemplate, {languages: this.languages, url: this.getBaseUrl() + '/locale/'}));
-        },
+        self.renderUILanguages = function () {
+            self.$uiLanguageBox.html(_.template(self.uiLanguageTemplate, {languages: self.languages, url: self.getBaseUrl() + '/locale/'}));
+        };
 
-        renderEnablingLanguages: function () {
-            this.$enablingLanguageBox.html(_.template(this.enablingLanguageTemplate, {languages: this.languages, url: this.getBaseUrl() + '/enable/'}));
-        },
+        self.renderEnablingLanguages = function () {
+            self.$enablingLanguageBox.html(_.template(self.enablingLanguageTemplate, {languages: self.languages, url: self.getBaseUrl() + '/enable/'}));
+        };
 
-        renderEntry: function (entry) {
+        self.renderEntry = function (entry) {
             var data = {
                 entry: entry,
-                languages: this.languages
+                languages: self.languages
             };
             entry._multiline = entry.multiline ? 'multiline' : '';
             entry._orphan = entry.orphan ? 'orphan' : '';
             entry._files = entry.files ? entry.files.join(' | ') : '';
 
-            return _.template(this.entryBoxTemplate, data);
-        },
+            return _.template(self.entryBoxTemplate, data);
+        };
 
-        renderPaginator: function (totalNumber, itemsOnPage) {
-            var self = this;
+        self.renderPaginator = function (totalNumber, itemsOnPage) {
             var pageNumber = Math.ceil(totalNumber / itemsOnPage);
 
             var options = {
@@ -226,34 +230,34 @@ var underscore = _.noConflict();
                 }
             }
 
-            this.$paginationBox.bootstrapPaginator(options);
-        },
+            self.$paginationBox.bootstrapPaginator(options);
+        };
 
-        search: function (event) {
-            var q = $(this).val();
+        self.search = function (e) {
+            var q = $(e.target).val();
 
-            app.searchString = q;
+            self.searchString = q;
 
-            app.getEntries(q, function (err, data) {
+            self.getEntries(q, function (err, data) {
                 if (err) console.log(err);
 
-                app.entries = data.entries;
+                self.entries = data.entries;
 
-                app.render(data);
+                self.render(data);
 
                 $('#languages-switcher button').first().click();
             });
-        },
+        };
 
-        clearSearchField: function () {
-            app.$searchField.val('');
-            app.$searchField.trigger('blur');
+        self.clearSearchField = function () {
+            self.$searchField.val('');
+            self.$searchField.trigger('blur');
 
             return false;
-        },
+        };
 
-        enablingLanguage: function (event) {
-            var $button = $(this);
+        self.enablingLanguage = function (e) {
+            var $button = $(e.target);
 
             $.ajax({
                 url: $button.data('href'),
@@ -266,34 +270,47 @@ var underscore = _.noConflict();
             });
 
             return false;
-        },
+        };
 
-        filters: function (event) {
-            var $button = $(this);
+        self.filters = function (e) {
+            var $button = $(e.target);
             var locale = $button.data('locale');
 
             if (!$button.hasClass('active')) {
-                app.languages[locale].hide = true;
+                self.languages[locale].hide = true;
             } else {
-                app.languages[locale].hide = false;
+                self.languages[locale].hide = false;
             }
 
-            app.renderEntries(app.entries);
-        },
+            self.renderEntries(self.entries);
+        };
 
-        edit: function (event) {
-            event.preventDefault();
+        self.filters = function (e) {
+            var $button = $(e.target);
+            var locale = $button.data('locale');
 
-            var tr = $(this);
+            if (!$button.hasClass('active')) {
+                self.languages[locale].hide = true;
+            } else {
+                self.languages[locale].hide = false;
+            }
+
+            self.renderEntries(self.entries);
+        };
+
+        self.edit = function (e) {
+            e.preventDefault();
+
+            var tr = $(e.target);
             if (tr.children('.input').length) return false;
 
             if (tr.parent('.field').hasClass('original')) {
                 return false
             }
 
-            var $container = $(this).parents('.entry');
+            var $container = $(e.target).parents('.entry');
             var hash = $container.data('id');
-            var entry = app.entries[hash];
+            var entry = self.entries[hash];
 
             $container.addClass('edit');
 
@@ -305,17 +322,17 @@ var underscore = _.noConflict();
                 tr.html('<input class="input" type="text" value="' + _.escape(message) + '"/>');
             }
 
-            var $input = $(".input", this);
+            var $input = $(".input", e.target);
 
             $input.autoResize(); // for auto resize of textarea
 
             $input.focus();
-        },
+        };
 
-        update: function (event) {
-            var $input = $(this);
+        self.update = function (e) {
+            var $input = $(e.target);
 
-            var $container = $(this).parents('.entry');
+            var $container = $(e.target).parents('.entry');
             var hash = $container.data('id');
 
             $container.removeClass('edit');
@@ -326,28 +343,28 @@ var underscore = _.noConflict();
             var $tr = $input.parent('.translation');
             var locale = $tr.data('locale');
 
-            var entry = app.entries[hash];
+            var entry = self.entries[hash];
 
             if (message.length) {
                 $tr.html(message);
 
-                app.entries[hash].locale[locale] = message;
+                self.entries[hash].locale[locale] = message;
 
-                app.updateEntry(hash, locale, function (err) {
+                self.updateEntry(hash, locale, function (err) {
                     if (err) return alert(err);
                 });
             } else {
-                $tr.html(app.entries[hash].locale[locale] || '');
+                $tr.html(self.entries[hash].locale[locale] || '');
             }
-        },
+        };
 
-        toggleMultiline: function (event) {
-            event.preventDefault();
+        self.toggleMultiline = function (e) {
+            e.preventDefault();
 
-            var $container = $(this).parents('.entry');
+            var $container = $(e.target).parents('.entry');
             var hash = $container.data('id');
 
-            var entry = app.entries[hash];
+            var entry = self.entries[hash];
             entry.multiline = entry.multiline ? false : true;
 
             if (entry.multiline) {
@@ -356,34 +373,53 @@ var underscore = _.noConflict();
                 $container.removeClass('multiline');
             }
 
-            app.updateEntry(hash, null, function () {
+            self.updateEntry(hash, null, function () {
             });
-        },
+        };
 
-        remove: function (event) {
-            event.preventDefault();
+        self.toggleMultiline = function (e) {
+            e.preventDefault();
 
-            var $container = $(this).parents('.entry');
+            var $container = $(e.target).parents('.entry');
             var hash = $container.data('id');
 
-            var entry = app.entries[hash];
+            var entry = self.entries[hash];
+            entry.multiline = entry.multiline ? false : true;
+
+            if (entry.multiline) {
+                $container.addClass('multiline');
+            } else {
+                $container.removeClass('multiline');
+            }
+
+            self.updateEntry(hash, null, function () {
+            });
+        };
+
+        self.remove = function (e) {
+            e.preventDefault();
+
+            var $container = $(e.target).parents('.entry');
+            var hash = $container.data('id');
+
+            var entry = self.entries[hash];
 
             var message = entry.locale[entry.original].substring(0, 24);
 
-            if (confirm(_.template(app.removeEntryMessage, {message: message}))) {
-                app.removeEntry(hash, function (err) {
+            if (confirm(_.template(self.removeEntryMessage, {message: message}))) {
+                self.removeEntry(hash, function (err) {
                     if (err) return alert(err);
 
-                    delete app.entries[hash];
+                    delete self.entries[hash];
 
                     $container.remove();
                 });
             }
-        },
+        };
 
-        getLanguages: function (callback) {
+        self.getLanguages = function (callback) {
             $.ajax({
-                url: this.getBaseUrl() + '/languages',
+                url: self.getBaseUrl() + '/languages',
                 type: 'GET',
                 dataType: "json"
             }).done(function (data) {
@@ -391,9 +427,9 @@ var underscore = _.noConflict();
             }).fail(function (jqXHR) {
                 callback(jqXHR.statusText);
             });
-        },
+        };
 
-        getEntries: function (query, skip, limit, callback) {
+        self.getEntries = function (query, skip, limit, callback) {
             if (typeof query === 'function') {
                 callback = query;
                 query = null;
@@ -405,7 +441,7 @@ var underscore = _.noConflict();
                 limit = null;
             }
 
-            var url = this.getEntryUrl() + '?q=';
+            var url = self.getEntryUrl() + '?q=';
             url += query ? encodeURIComponent(query) : '';
 
             url += '&skip=' + (skip ? encodeURIComponent(skip) : '');
@@ -420,22 +456,22 @@ var underscore = _.noConflict();
             }).fail(function (jqXHR) {
                 callback(jqXHR.statusText);
             });
-        },
+        };
 
-        updateEntry: function (hash, locale, callback) {
+        self.updateEntry = function (hash, locale, callback) {
             var entry = {
                 hash: hash,
                 locale: {}
             }
 
             if (locale) {
-                entry.locale[locale] = this.entries[hash].locale[locale];
+                entry.locale[locale] = self.entries[hash].locale[locale];
             }
 
-            entry.multiline = this.entries[hash].multiline;
+            entry.multiline = self.entries[hash].multiline;
 
             $.ajax({
-                url: this.getEntryUrl(),
+                url: self.getEntryUrl(),
                 type: 'PUT',
                 dataType: "json",
                 data: entry
@@ -445,11 +481,61 @@ var underscore = _.noConflict();
             }).fail(function (jqXHR) {
                 callback(jqXHR.statusText);
             });
-        },
+        };
 
-        removeEntry: function (hash, callback) {
+        self.updateEntry = function (hash, locale, callback) {
+            var entry = {
+                hash: hash,
+                locale: {}
+            }
+
+            if (locale) {
+                entry.locale[locale] = self.entries[hash].locale[locale];
+            }
+
+            entry.multiline = self.entries[hash].multiline;
+
             $.ajax({
-                url: this.getEntryUrl() + hash,
+                url: self.getEntryUrl(),
+                type: 'PUT',
+                dataType: "json",
+                data: entry
+
+            }).done(function (data) {
+                callback(null, data);
+            }).fail(function (jqXHR) {
+                callback(jqXHR.statusText);
+            });
+        };
+
+        self.updateEntry = function (hash, locale, callback) {
+            var entry = {
+                hash: hash,
+                locale: {}
+            }
+
+            if (locale) {
+                entry.locale[locale] = self.entries[hash].locale[locale];
+            }
+
+            entry.multiline = self.entries[hash].multiline;
+
+            $.ajax({
+                url: self.getEntryUrl(),
+                type: 'PUT',
+                dataType: "json",
+                data: entry
+
+            }).done(function (data) {
+                callback(null, data);
+            }).fail(function (jqXHR) {
+                callback(jqXHR.statusText);
+            });
+        };
+
+        self.removeEntry = function (hash, callback) {
+            $.ajax({
+                url: self.getEntryUrl() + hash,
                 type: 'DELETE',
                 dataType: "json"
             }).done(function () {
@@ -457,11 +543,11 @@ var underscore = _.noConflict();
             }).fail(function (jqXHR) {
                 callback(jqXHR.statusText);
             });
-        },
+        };
 
-        removeLocale: function (hash, locale, callback) {
+        self.removeLocale = function (hash, locale, callback) {
             $.ajax({
-                url: this.getEntryUrl() + hash + '/' + locale,
+                url: self.getEntryUrl() + hash + '/' + locale,
                 type: 'DELETE',
                 dataType: 'json'
             }).done(function () {
@@ -469,14 +555,14 @@ var underscore = _.noConflict();
             }).fail(function (jqXHR) {
                 callback(jqXHR.statusText);
             });
-        },
+        };
 
-        exports: function (event) {
-            var url = app.getBaseUrl() + '/export';
-            var $self = $(this);
+        self.exports = function (e) {
+            var url = self.getBaseUrl() + '/export';
+            var $self = $(e.target);
 
             if (!$self.hasClass('disabled')) {
-                app.disableExportImport();
+                self.disableExportImport();
 
                 doRequest();
             }
@@ -499,17 +585,17 @@ var underscore = _.noConflict();
                         alert('Data can not be exported to Transifex. \n Please contact the administrator.');
                     }
                 }).always(function () {
-                    app.enableExportImport();
+                    self.enableExportImport();
                 });
             }
-        },
+        };
 
-        imports: function (event) {
-            var url = app.getBaseUrl() + '/import';
-            var $self = $(this);
+        self.imports = function (e) {
+            var url = self.getBaseUrl() + '/import';
+            var $self = $(e.target);
 
             if (!$self.hasClass('disabled')) {
-                app.disableExportImport();
+                self.disableExportImport();
 
                 doRequest();
             }
@@ -532,21 +618,21 @@ var underscore = _.noConflict();
                         alert('Data can not be imported from Transifex. \n Please contact the administrator.');
                     }
                 }).always(function () {
-                    app.enableExportImport();
+                    self.enableExportImport();
                 });
             }
-        },
+        };
 
-        enableExportImport: function () {
-            this.$exportButton.removeClass('disabled');
-            this.$importButton.removeClass('disabled');
-        },
+        self.enableExportImport = function () {
+            self.$exportButton.removeClass('disabled');
+            self.$importButton.removeClass('disabled');
+        };
 
-        disableExportImport: function () {
-            this.$exportButton.addClass('disabled');
-            this.$importButton.addClass('disabled');
-        }
-    };
+        self.disableExportImport = function () {
+            self.$exportButton.addClass('disabled');
+            self.$importButton.addClass('disabled');
+        };
+    }
 
     var keyCode = {
         ENTER: 13,
@@ -568,7 +654,7 @@ var underscore = _.noConflict();
             escape: /\{\{-(.+?)\}\}/g
         };
 
-        app.init();
+        new App().init();
     });
 
 

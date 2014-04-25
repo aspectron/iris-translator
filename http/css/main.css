@@ -89,6 +89,10 @@ a.glyphicon {
   height: 35px;
   margin: 20px auto 40px;
 }
+#items-on-page {
+  float: right;
+  margin: 15px 10px;
+}
 a.disabled {
   opacity: .3;
   color: #777;

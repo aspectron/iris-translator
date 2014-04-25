@@ -12,6 +12,7 @@ var underscore = _.noConflict();
             this.baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
             this.entries = {};
+            this.itemsOnPage = null;
 
 
             this.$pageHeader = $('.page-header');
@@ -34,6 +35,7 @@ var underscore = _.noConflict();
             this.$searchField = $('#search');
             this.$searchClearButton = $('#search-clear');
 
+            this.$itemsOnPage = $('#items-on-page');
 
             // binds handlers
             $('body').on('click', '#filter button', this.filters);
@@ -76,6 +78,17 @@ var underscore = _.noConflict();
                 }
             });
 
+            this.$itemsOnPage.change(function() {
+                app.itemsOnPage = $(this).val();
+
+                app.getEntries(app.searchString, null, app.itemsOnPage, function (err, data) {
+                    if (err) console.log(err);
+
+                    app.entries = data.entries;
+
+                    app.render(data);
+                });
+            });
 
             this.initAjax();
 
@@ -93,6 +106,9 @@ var underscore = _.noConflict();
                 if (err) console.log(err);
 
                 self.entries = data.entries;
+                self.itemsOnPage = data.entriesOnPage;
+
+                self.$itemsOnPage.find('[value= '+ self.itemsOnPage +']').prop('selected', true);
 
                 self.render(data);
             });
@@ -123,7 +139,7 @@ var underscore = _.noConflict();
         render: function (data) {
             this.renderEntries(data.entries);
 
-            this.renderPaginator(data.totalNumber, data.entriesOnPage);
+            this.renderPaginator(data.totalNumber, this.itemsOnPage);
         },
 
         renderEntries: function (entries) {

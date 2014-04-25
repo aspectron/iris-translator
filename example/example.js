@@ -27,7 +27,7 @@ translator.runEditor({
         'admin': 'qwerty'
     },
     baseUrl: 'translator',
-    entriesOnPage: 7,
+    entriesOnPage: 10,
     editorViewPath: __dirname + '/../views/',
     editorStaticFilesPath: __dirname + '/../http/',
     storagePath: __dirname + '/messages/',

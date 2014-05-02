@@ -91,7 +91,9 @@ app.get('/page2', function (req, res) {
     res.render('page2', {_T: req._T, title: 'translator | Page #2'});
 });
 
-app.get('/api/languages', translator.actionGetEnabledLanguages);
+app.get('/api/languages', function (req, res) {
+    res.send(200, translator.getEnabledLanguages());
+});
 app.get('/api/setlang/:locale', translator.toggleLanguage)
 //app.get('/locale/:locale', translator.toggleLanguage);
 

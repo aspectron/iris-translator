@@ -18,9 +18,6 @@ app.use(connect.session({
     })}));
 app.use(translator.useSession);
 
-
-//app.use(app.router);
-
 translator.runEditor({
     port: 3030,
     users: {
@@ -30,9 +27,6 @@ translator.runEditor({
     entriesOnPage: 10,
     editorViewPath: __dirname + '/../views/',
     editorStaticFilesPath: __dirname + '/../http/',
-    storagePath: __dirname + '/messages/',
-    rootFolderPath: __dirname,
-    folders: ['views'],
     transifex: {
         user: 'translator.transifex.test@gmail.com',
         password: 'qp7g2l9b58',

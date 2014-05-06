@@ -19,7 +19,8 @@
         "underscore": "*",
         "mkpath": "*",
         "chokidar": "*",
-        "request": "*"
+        "request": "*",
+        "zetta-utils": "*"
     },
     "main": "./lib/translator.js",
     "repository": {

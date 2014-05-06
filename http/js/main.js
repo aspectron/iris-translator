@@ -68,7 +68,7 @@ var underscore = _.noConflict();
 
         self.bindEvents = function () {
             $('body').on('click', '#filter button', self.filters);
-            $('#enabling-language-list').on('click', 'label', self.enablingLanguage);
+            $('#enabling-language-list').on('click', 'label, input[type="checkbox"]', self.enablingLanguage);
             $('#close-enabling-language-list').on('click', function () {
                 $(body).focus();
 
@@ -259,8 +259,14 @@ var underscore = _.noConflict();
         self.enablingLanguage = function (e) {
             var $button = $(e.target);
 
+            if ($button.is('input[type="checkbox"]')) {
+                $button = $button.parent();
+            }
+
+            var url = $button.data('href');
+
             $.ajax({
-                url: $button.data('href'),
+                url: url,
                 type: 'GET',
                 dataType: "json"
             }).done(function (data) {

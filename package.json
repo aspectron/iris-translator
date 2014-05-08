@@ -20,7 +20,9 @@
         "mkpath": "*",
         "chokidar": "*",
         "request": "*",
-        "zetta-utils": "*"
+        "zetta-utils": "*",
+        "mongodb": "*",
+        "node-uuid": "*"
     },
     "main": "./lib/translator.js",
     "repository": {

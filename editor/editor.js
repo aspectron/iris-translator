@@ -22,7 +22,11 @@ Translator.init({
     },
     storagePath: __dirname + '/../example/messages',
     rootFolderPath: __dirname + '/../example/',
-    folders: ['views']
+    folders: ['views'],
+    mongoStorage: {
+        url: "mongodb://localhost/translation",
+        collection: "translation"
+    }
 }, function () {
     Translator.runEditor({
         port: 4000,

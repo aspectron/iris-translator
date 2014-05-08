@@ -63,7 +63,11 @@ translator.init({
     },
     storagePath: __dirname + '/messages',
     rootFolderPath: __dirname,
-    folders: ['views']
+    folders: ['views'],
+    mongoStorage: {
+        url: "mongodb://localhost/translation",
+        collection: "translation"
+    }
 }, function () {
     translator.separateEditor();
 

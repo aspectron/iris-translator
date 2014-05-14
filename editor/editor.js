@@ -24,8 +24,7 @@ Translator.init({
     rootFolderPath: __dirname + '/../example/',
     folders: ['views'],
     mongoStorage: {
-        url: "mongodb://localhost/translation",
-        collection: "translation"
+        url: "mongodb://localhost/translation"
     }
 }, function () {
     Translator.runEditor({

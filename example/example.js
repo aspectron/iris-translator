@@ -115,8 +115,7 @@ translator.init({
     rootFolderPath: __dirname,
     folders: ['views'],
     mongoStorage: {
-        url: "mongodb://localhost/translation",
-        collection: "translation"
+        url: "mongodb://localhost/translation"
     }
 }, function () {
     http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {

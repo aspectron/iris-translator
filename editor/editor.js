@@ -2,7 +2,7 @@
 
 var Translator = require('../lib/translator');
 
-Translator.init({
+var translator = new Translator({
     defaultLanguage: 'de',
     languages: {
         en: {
@@ -24,7 +24,7 @@ Translator.init({
     rootFolderPath: __dirname + '/../example/',
     folders: ['views']
 }, function () {
-    Translator.runEditor({
+    translator.runEditor({
         port: 4000,
         users: {
             'admin': 'qwerty'

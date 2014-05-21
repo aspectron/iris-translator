@@ -2,7 +2,39 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var connect = require('connect');
-var translator = require('../lib/translator');
+var Translator = require('../lib/translator');
+
+var translator = new Translator ({
+    defaultLanguage: 'de',
+    languages: {
+        en: {
+            name: "English",
+            enabled: true
+        },
+        ru: {
+            name: "Русский",
+            enabled: true
+        },
+        de: {
+            name: "Deutsch",
+            enabled: true
+        },
+        it: {
+            name: "Italiano",
+            enabled: true
+        }
+    },
+    storagePath: __dirname + '/messages',
+    rootFolderPath: __dirname,
+    folders: ['views'],
+    mongoStorage: {
+        url: "mongodb://localhost/translation"
+    }
+}, function () {
+    http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
+        console.log('Express server listening on port ' + app.get('port'));
+    });
+});
 
 var app = express();
 app.set('port', process.env.PORT || 3000);
@@ -90,38 +122,6 @@ app.get('/api/languages', function (req, res) {
 });
 app.get('/api/setlang/:locale', translator.toggleLanguage)
 //app.get('/locale/:locale', translator.toggleLanguage);
-
-translator.init({
-    defaultLanguage: 'de',
-    languages: {
-        en: {
-            name: "English",
-            enabled: true
-        },
-        ru: {
-            name: "Русский",
-            enabled: true
-        },
-        de: {
-            name: "Deutsch",
-			 enabled: true
-        },
-        it: {
-            name: "Italiano",
-			 enabled: true
-        }
-    },
-    storagePath: __dirname + '/messages',
-    rootFolderPath: __dirname,
-    folders: ['views'],
-    mongoStorage: {
-        url: "mongodb://localhost/translation"
-    }
-}, function () {
-    http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
-        console.log('Express server listening on port ' + app.get('port'));
-    });
-});
 
 
 

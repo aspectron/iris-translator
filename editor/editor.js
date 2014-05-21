@@ -3,37 +3,37 @@
 var Translator = require('../lib/translator');
 
 var translator = new Translator({
-        defaultLanguage: 'de',
-        languages: {
-            en: {
-                name: "English",
-                enabled: true
-            },
-            ru: {
-                name: "Русский",
-                enabled: false
-            },
-            de: {
-                name: "Deutsch"
-            },
-            it: {
-                name: "Italiano"
-            }
+    defaultLanguage: 'de',
+    languages: {
+        en: {
+            name: "English",
+            enabled: true
         },
-        storagePath: __dirname + '/../example/messages',
-        rootFolderPath: __dirname + '/../example/',
-        folders: ['views'],
-        mongoStorage: {
-            url: "mongodb://localhost/translation"
+        ru: {
+            name: "Русский",
+            enabled: false
+        },
+        de: {
+            name: "Deutsch"
+        },
+        it: {
+            name: "Italiano"
         }
+    },
+    storagePath: __dirname + '/../example/messages',
+    rootFolderPath: __dirname + '/../example/',
+    folders: ['views'],
+    mongoStorage: {
+        url: "mongodb://localhost/translation"
+    }
+}, function () {
+    translator.runEditor({
+        port: 4000,
+        users: {
+            'admin': 'qwerty'
+        },
+        baseUrl: 'translator'
     }, function () {
-        translator.runEditor({
-            port: 4000,
-            users: {
-                'admin': 'qwerty'
-            },
-            baseUrl: 'translator'
-        }, function () {
 
-        });
     });
+});

@@ -122,7 +122,3 @@ app.get('/api/languages', function (req, res) {
 });
 app.get('/api/setlang/:locale', translator.toggleLanguage)
 //app.get('/locale/:locale', translator.toggleLanguage);
-
-
-
-

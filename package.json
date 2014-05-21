@@ -1,7 +1,7 @@
 {
     "name": "zetta-translator",
     "description": "Language Translation Framework for Applications & Web Sites",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": {
         "name": "ASPECTRON Inc.",
         "email": "info@aspectron.com"

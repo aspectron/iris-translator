@@ -25,6 +25,7 @@ var translator = new Translator ({
     storagePath: __dirname + '/messages',
     rootFolderPath: __dirname,
     folders: ['views'],
+    enableWatcher: true,
     mongoStorage: {
         url: "mongodb://localhost/translation"
     },

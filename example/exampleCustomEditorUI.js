@@ -26,7 +26,10 @@ var translator = new Translator ({
     },
     storagePath: __dirname + '/messages',
     rootFolderPath: __dirname,
-    folders: ['views']
+    folders: ['views'],
+    mongoStorage: {
+        url: "mongodb://localhost/translation"
+    }
 }, function () {
     http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
         console.log('Express server listening on port ' + app.get('port'));

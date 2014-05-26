@@ -33,8 +33,16 @@ var translator = new Translator({
         users: {
             'admin': 'qwerty'
         },
-        baseUrl: 'translator'
-    }, function () {
-
+        baseUrl: 'translator',
+        transifex: {
+            user: 'translator.transifex.test@gmail.com',
+            password: 'qp7g2l9b58',
+            projectSlug: 'jazz',
+            resourceSlug: 'first-file'
+        }
+    }, function (err) {
+        if (err) {
+            console.error('Translator: Editor' ,err)
+        }
     });
 });

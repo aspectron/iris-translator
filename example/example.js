@@ -66,7 +66,9 @@ translator.runEditor({
         resourceSlug: 'first-file'
     }
 }, function () {
-
+    if (err) {
+        console.error('Translator: Editor' ,err)
+    }
 });
 
 
@@ -121,4 +123,3 @@ app.get('/api/languages', function (req, res) {
     res.send(200, translator.getEnabledLanguages());
 });
 app.get('/api/setlang/:locale', translator.toggleLanguage)
-//app.get('/locale/:locale', translator.toggleLanguage);

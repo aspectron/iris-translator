@@ -118,7 +118,7 @@
     </div>
 </script>
 
-<script type="text/html" id='language-button-box-template'>
+<script type="text/html" id='filter-language-button-box-template'>
     <div id="filter" class="btn-group pull-left">
         {{ _.each(languages, function (lang, locale) { }}
         <button type="button" class="btn btn-default {{ if (lang.sourceLanguage) print('source') }}" data-toggle="button" data-locale="{{= locale }}">{{= lang.name}}

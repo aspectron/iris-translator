@@ -545,18 +545,6 @@ var underscore = _.noConflict();
             });
         };
 
-        self.removeLocale = function (hash, locale, callback) {
-            $.ajax({
-                url: self.getEntryUrl() + hash + '/' + locale,
-                type: 'DELETE',
-                dataType: 'json'
-            }).done(function () {
-                callback(null);
-            }).fail(function (jqXHR) {
-                callback(jqXHR.statusText);
-            });
-        };
-
         self.exports = function (e) {
             var url = self.getBaseUrl() + '/export';
             var $self = $(e.target);

@@ -60,9 +60,9 @@ translator.runEditor({
     editorViewPath: __dirname + '/customEditor/',
     editorStaticFilesPath: __dirname + '/customEditor/staticFiles/',
     transifex: {
-        user: 'translator.transifex.test@gmail.com',
+        user: 'translator.transifex@mail.com',
         password: 'qp7g2l9b58',
-        projectSlug: 'jazz',
+        projectSlug: 'jazz-1',
         resourceSlug: 'first-file'
     }
 }, function (err) {

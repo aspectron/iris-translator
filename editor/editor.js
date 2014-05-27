@@ -36,8 +36,8 @@ var translator = new Translator({
         baseUrl: 'translator',
         transifex: {
             user: 'translator.transifex@mail.com',
-                password: 'qp7g2l9b58',
-            projectSlug: 'jazz',
+            password: 'qp7g2l9b58',
+            projectSlug: 'jazz-1',
             resourceSlug: 'first-file'
         }
     }, function (err) {

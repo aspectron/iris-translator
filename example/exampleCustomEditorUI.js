@@ -65,7 +65,7 @@ translator.runEditor({
         projectSlug: 'jazz',
         resourceSlug: 'first-file'
     }
-}, function () {
+}, function (err) {
     if (err) {
         console.error('Translator: Editor' ,err)
     }

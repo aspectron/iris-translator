@@ -31,6 +31,27 @@ var translator = new Translator ({
         url: "mongodb://localhost/translation"
     }
 }, function () {
+    translator.runEditor({
+        port: 3030,
+        users: {
+            'admin': 'qwerty'
+        },
+        baseUrl: 'translator',
+        entriesOnPage: 7,
+        editorViewPath: __dirname + '/customEditor/',
+        editorStaticFilesPath: __dirname + '/customEditor/staticFiles/',
+        transifex: {
+            user: 'translator.transifex@mail.com',
+            password: 'qp7g2l9b58',
+            projectSlug: 'jazz-1',
+            resourceSlug: 'first-file'
+        }
+    }, function (err) {
+        if (err) {
+            console.error('Translator: Editor' ,err)
+        }
+    });
+
     http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
         console.log('Express server listening on port ' + app.get('port'));
     });
@@ -49,28 +70,6 @@ app.use(connect.session({
         reapInterval: 60000 * 60
     })}));
 app.use(translator.useSession);
-
-translator.runEditor({
-    port: 3030,
-    users: {
-        'admin': 'qwerty'
-    },
-    baseUrl: 'translator',
-    entriesOnPage: 7,
-    editorViewPath: __dirname + '/customEditor/',
-    editorStaticFilesPath: __dirname + '/customEditor/staticFiles/',
-    transifex: {
-        user: 'translator.transifex@mail.com',
-        password: 'qp7g2l9b58',
-        projectSlug: 'jazz-1',
-        resourceSlug: 'first-file'
-    }
-}, function (err) {
-    if (err) {
-        console.error('Translator: Editor' ,err)
-    }
-});
-
 
 // development only
 if ('development' == app.get('env')) {
@@ -100,12 +99,6 @@ app.get('/sitemap.xml', translator.sitemap({
         }
     ]
 }));
-
-/*app.get('/', function (req, res) {
-    res.redirect('/' + translator.getDefaultLanguage());
-});
-
-app.all('/:locale/*', translator.useUrl);*/
 
 app.get('/', function (req, res) {
     res.render('index', {_T: req._T, title: 'translator', languages: translator.getEnabledLanguages()});

@@ -78,7 +78,13 @@
         'admin': 'qwerty'
         },
         baseUrl: 'translator',
-        entriesOnPage: 7
+        entriesOnPage: 7,
+        transifex: {
+            user: 'translator.transifex@mail.com',
+            password: 'qp7g2l9b58',
+            projectSlug: 'jazz-1',
+            resourceSlug: 'first-file'
+        }
     }, function () {
 
     });
@@ -90,10 +96,9 @@
     translator.init({
         storagePath: __dirname + '/messages',
         rootFolderPath: __dirname,
-        folders: ['views']
+        folders: ['views'],
+        enableWatcher: true,
     }, function () {
-        translator.separateEditor();
-
         http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
             console.log('Express server listening on port ' + app.get('port'));
         });

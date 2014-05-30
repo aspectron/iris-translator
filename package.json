@@ -21,8 +21,8 @@
         "chokidar": "0.8.2",
         "request": "2.36.0",
         "zetta-utils": "0.1.1",
-        "mongodb": "*",
-        "node-uuid": "*"
+        "mongodb": "1.4.5",
+        "node-uuid": "1.4.1"
     },
     "main": "./lib/translator.js",
     "repository": {

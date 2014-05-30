@@ -1,13 +1,15 @@
 {
-  "name": "TranslatorExample",
-  "version": "0.0.2",
-  "private": true,
-  "scripts": {
-    "start": "node example.js"
-  },
-  "dependencies": {
-    "express": "*",
-    "connect": "*",
-    "ejs": "*"
-  }
+    "name": "TranslatorExample",
+    "version": "0.0.2",
+    "private": true,
+    "scripts": {
+        "start": "node example.js"
+    },
+    "dependencies": {
+        "express": "4.3.0",
+        "ejs": "*",
+        "cookie-parser": "1.1.0",
+        "express-session": "1.2.1",
+        "body-parser": "1.2.2"
+    }
 }

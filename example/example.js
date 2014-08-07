@@ -53,10 +53,6 @@ var translator = new Translator({
             console.error('Translator: Editor', err);
         }
     });
-
-    http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
-        console.log('Express server listening on port ' + app.get('port'));
-    });
 });
 
 var app = express();
@@ -110,4 +106,8 @@ app.get('/page2', function (req, res) {
 app.get('/api/languages', function (req, res) {
     res.send(200, translator.getEnabledLanguages());
 });
-app.get('/api/setlang/:locale', translator.toggleLanguage)
+app.get('/api/setlang/:locale', translator.toggleLanguage);
+
+http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
+    console.log('Express server listening on port ' + app.get('port'));
+});

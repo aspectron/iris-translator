@@ -14,13 +14,18 @@
     "dependencies": {
         "json": "8.0.0",
         "express": "4.3.0",
-        "connect": "2.17.1",
         "ejs": "1.0.0",
+        "cookie-parser": "1.1.0",
+        "express-session": "1.2.1",
+        "body-parser": "1.2.2",
+        "basic-auth": "0.0.1",
         "underscore": "1.6.0",
         "mkpath": "0.1.0",
         "chokidar": "0.8.2",
         "request": "2.36.0",
-        "zetta-utils": "0.1.1"
+        "zetta-utils": "0.1.1",
+        "mongodb": "1.4.5",
+        "node-uuid": "1.4.1"
     },
     "main": "./lib/translator.js",
     "repository": {

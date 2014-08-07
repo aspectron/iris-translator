@@ -22,15 +22,27 @@ var translator = new Translator({
     },
     storagePath: __dirname + '/../example/messages',
     rootFolderPath: __dirname + '/../example/',
-    folders: ['views']
+    folders: ['views'],
+    enableWatcher: true,
+    mongoStorage: {
+        url: "mongodb://localhost/translation"
+    }
 }, function () {
     translator.runEditor({
         port: 4000,
         users: {
             'admin': 'qwerty'
         },
-        baseUrl: 'translator'
-    }, function () {
-
+        baseUrl: 'translator',
+        transifex: {
+            user: 'translator.transifex@mail.com',
+            password: 'qp7g2l9b58',
+            projectSlug: 'jazz-1',
+            resourceSlug: 'first-file'
+        }
+    }, function (err) {
+        if (err) {
+            console.error('Translator: Editor' ,err)
+        }
     });
 });

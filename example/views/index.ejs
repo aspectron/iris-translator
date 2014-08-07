@@ -27,20 +27,11 @@
 <h2><%= _T('Load') %></h2>
 
 
-<pre><code>     var translator = require('translator');</code></pre>
+<pre><code>     var Translator = require('translator');</code></pre>
 
 <h2><%= _T('Initialize') %></h2>
 <pre><code>
-    app.use(express.cookieParser('11e2-ab1f-0800200c9a66'));
-    app.use(express.session({
-        secret: 'a879d480-bf58-1b1f-0800200c9a66',
-    }));
-
-    app.use(translator.useSession);
-    // or
-    app.all('/:locale/*', translator.useUrl);
-
-    translator.init({
+    var translator = new Translator({
         defaultLanguage: 'de',
         languages: {
             en: {
@@ -61,10 +52,28 @@
         storagePath: __dirname + '/messages',
         rootFolderPath: __dirname,
         folders: ['views'],
+        enableWatcher: true,
     }, function () {
-        http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
-            console.log('Express server listening on port ' + app.get('port'));
-        });
+
+    });
+
+    var app = express();
+    app.set('port', process.env.PORT || 3000);
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'ejs');
+    app.use(bodyParser());
+    app.use(cookieParser());
+    app.use(session({
+    secret: 'a879d480-bf58-1b1f-0803300c9a66',
+        proxy: true // if you do SSL outside of node.
+    }));
+
+    app.use(translator.useSession);
+    // or
+    app.all('/:locale/*', translator.useUrl);
+
+    http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
+        console.log('Express server listening on port ' + app.get('port'));
     });
 </code></pre>
 <a href="configuration"><%= _T('List of configuration options') %></a>
@@ -78,25 +87,28 @@
         'admin': 'qwerty'
         },
         baseUrl: 'translator',
-        entriesOnPage: 7
-    }, function () {
-
+        entriesOnPage: 7,
+        transifex: {
+            user: 'translator.transifex@mail.com',
+            password: 'qp7g2l9b58',
+            projectSlug: 'jazz-1',
+            resourceSlug: 'first-file'
+        }
+    }, function (err) {
+        if (err) {
+            console.error('Translator: Editor' ,err)
+        }
     });
 </code></pre>
 
 
 <p>If you use an editor in a different process or manual editing files</p>
 <pre><code>
-    translator.init({
+    var translator = new Translator({
         storagePath: __dirname + '/messages',
         rootFolderPath: __dirname,
-        folders: ['views']
-    }, function () {
-        translator.separateEditor();
-
-        http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
-            console.log('Express server listening on port ' + app.get('port'));
-        });
+        folders: ['views'],
+        enableWatcher: true,
     });
 </code></pre>
 

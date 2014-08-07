@@ -1,10 +1,12 @@
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
-var connect = require('connect');
 var Translator = require('../lib/translator');
 
-var translator = new Translator ({
+var translator = new Translator({
     defaultLanguage: 'de',
     languages: {
         en: {
@@ -13,46 +15,38 @@ var translator = new Translator ({
         },
         ru: {
             name: "Русский",
-            enabled: false
+            enabled: true
         },
         de: {
-            name: "Deutsch"
+            name: "Deutsch",
+            enabled: true
         },
         it: {
-            name: "Italiano"
+            name: "Italiano",
+            enabled: true
         }
     },
     storagePath: __dirname + '/messages',
     rootFolderPath: __dirname,
-    folders: ['views']
-}, function () {
-    translator.separateEditor();
-
-    http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
-        console.log('Express server listening on port ' + app.get('port'));
-    });
+    folders: ['views'],
+    enableWatcher: true,
+    mongoStorage: {
+        url: "mongodb://localhost/translation"
+    }
 });
 
 var app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(connect.json());
-app.use(connect.urlencoded());
-app.use(connect.cookieParser('11e2-ab1f-0800200c9a66'));
-app.use(connect.session({
+app.use(bodyParser());
+app.use(cookieParser());
+app.use(session({
     secret: 'a879d480-bf58-1b1f-0800200c9a66',
-    store: connect.session.MemoryStore({
-        reapInterval: 60000 * 60
-    })}));
+    proxy: true // if you do SSL outside of node.
+}));
 app.use(translator.useSession);
 
-//app.use(app.router);
-
-// development only
-if ('development' == app.get('env')) {
-    app.use(connect.errorHandler());
-}
 
 app.get('/', function (req, res) {
     res.render('index', {_T: req._T, title: 'translator', varFromJs: req._T("A Variable Value"), languages: translator.getEnabledLanguages(), language: req.params.locale});
@@ -69,5 +63,8 @@ app.get('/page2', function (req, res) {
 app.get('/api/languages', function (req, res) {
     res.send(200, translator.getEnabledLanguages());
 });
-app.get('/api/setlang/:locale', translator.toggleLanguage)
-//app.get('/locale/:locale', translator.toggleLanguage);
+app.get('/api/setlang/:locale', translator.toggleLanguage);
+
+http.createServer(app).listen(app.get('port'), '127.0.0.1', function () {
+    console.log('Express server listening on port ' + app.get('port'));
+});

@@ -8,7 +8,6 @@ var underscore = _.noConflict();
         self.languages = {};
         self.searchString = null;
 
-        //self.baseUrl = document.URL;
         self.baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
 
         self.entries = {};
@@ -25,13 +24,13 @@ var underscore = _.noConflict();
 
                 self.languages = languages;
 
-                self.renderLangButtons();
+                self.renderFilterLangButtons();
                 self.renderUILanguages();
                 self.renderEnablingLanguages();
             });
 
             self.getEntries(function (err, data) {
-                if (err) console.log(err);
+                if (err) return false;
 
                 self.entries = data.entries;
                 self.itemsOnPage = data.entriesOnPage;
@@ -48,39 +47,35 @@ var underscore = _.noConflict();
             self.$uiLanguageBox = $('#ui-language-list');
             self.$enablingLanguageBox = $('#enabling-language-list');
 
-            self.langButtonBoxTemplate = $('#language-button-box-template').html();
-            self.entryBoxTemplate = $('#entry-box-template').html();
-            self.uiLanguageTemplate = $('#ui-language').html();
-            self.enablingLanguageTemplate = $('#enabling-language').html();
-
-            self.removeEntryMessage = $('#remove-entry-message').html();
-
+            self.$searchField = $('#search');
+            self.$searchClearButton = $('#search-clear');
             self.$paginationBox = $('#pagination');
-
+            self.$itemsOnPage = $('#items-on-page');
             self.$exportButton = $('#export');
             self.$importButton = $('#import');
 
-            self.$searchField = $('#search');
-            self.$searchClearButton = $('#search-clear');
-
-            self.$itemsOnPage = $('#items-on-page');
+            self.entryBoxTemplate = $('#entry-box-template').html();
+            self.filerLangButtonBoxTemplate = $('#filter-language-button-box-template').html();
+            self.uiLanguageTemplate = $('#ui-language').html();
+            self.enablingLanguageTemplate = $('#enabling-language').html();
+            self.removeEntryMessage = $('#remove-entry-message').html();
         };
 
         self.bindEvents = function () {
             $('body').on('click', '#filter button', self.filters);
-            $('#enabling-language-list').on('click', 'label', self.enablingLanguage);
+            self.$enablingLanguageBox.on('click', 'label, input[type="checkbox"]', self.enablingLanguage);
             $('#close-enabling-language-list').on('click', function () {
-                $(body).focus();
+                $('body').click();
 
                 return false;
             });
 
-            $('#export').on('click', self.exports);
-            $('#import').on('click', self.imports);
+            self.$exportButton.on('click', self.exports);
+            self.$importButton.on('click', self.imports);
 
             self.$searchField.on('blur', self.search);
             self.$searchField.on('keydown', function (e) {
-                if (e.which == keyCode.ENTER) {
+                if (e.which === keyCode.ENTER) {
                     e.stopPropagation();
                     $(e.target).blur();
                 }
@@ -111,7 +106,7 @@ var underscore = _.noConflict();
                 self.itemsOnPage = $(e.target).val();
 
                 self.getEntries(self.searchString, null, self.itemsOnPage, function (err, data) {
-                    if (err) console.log(err);
+                    if (err) return false;
 
                     self.entries = data.entries;
 
@@ -121,10 +116,19 @@ var underscore = _.noConflict();
         };
 
         self.initAjax = function () {
-            $(document).ajaxError(function (event, request, settings) {
-                switch (request.status) {
+            $(document).ajaxError(function (event, jqXHR) {
+                if (jqXHR.status === 0 || jqXHR.readyState === 0) {
+                    alert('Cannot connect to server. Please try again later.');
+                    return;
+                }
+
+                switch (jqXHR.status) {
                     case 403:
                         window.location.reload();
+                        break;
+
+                    case 500:
+                        alert('Temporary server error. Please try again later.');
                         break;
                 }
             });
@@ -152,7 +156,6 @@ var underscore = _.noConflict();
             self.$entryBox.empty();
 
             var htmlParts = [];
-
             var sortedEntries = [];
 
             _.each(entries, function (entry) {
@@ -171,12 +174,11 @@ var underscore = _.noConflict();
                 htmlParts.push(html);
             });
 
-
             self.$entryBox.html(htmlParts.join(''));
         };
 
-        self.renderLangButtons = function () {
-            self.$pageHeader.prepend(_.template(self.langButtonBoxTemplate, {languages: self.languages}));
+        self.renderFilterLangButtons = function () {
+            self.$pageHeader.prepend(_.template(self.filerLangButtonBoxTemplate, {languages: self.languages}));
         };
 
         self.renderUILanguages = function () {
@@ -212,14 +214,14 @@ var underscore = _.noConflict();
                     var skip = (newPage - 1) * itemsOnPage;
 
                     self.getEntries(self.searchString, skip, itemsOnPage, function (err, data) {
-                        if (err) console.log(err);
+                        if (err) return false;
 
                         self.entries = data.entries;
 
                         self.renderEntries(data.entries);
                     });
                 },
-                shouldShowPage: function (type, page, current) {
+                shouldShowPage: function (type) {
                     switch (type) {
                         case "first":
                         case "last":
@@ -228,7 +230,7 @@ var underscore = _.noConflict();
                             return true;
                     }
                 }
-            }
+            };
 
             self.$paginationBox.bootstrapPaginator(options);
         };
@@ -239,7 +241,7 @@ var underscore = _.noConflict();
             self.searchString = q;
 
             self.getEntries(q, function (err, data) {
-                if (err) console.log(err);
+                if (err) return false;
 
                 self.entries = data.entries;
 
@@ -259,8 +261,14 @@ var underscore = _.noConflict();
         self.enablingLanguage = function (e) {
             var $button = $(e.target);
 
+            if ($button.is('input[type="checkbox"]')) {
+                $button = $button.parent();
+            }
+
+            var url = $button.data('href');
+
             $.ajax({
-                url: $button.data('href'),
+                url: url,
                 type: 'GET',
                 dataType: "json"
             }).done(function (data) {
@@ -276,24 +284,7 @@ var underscore = _.noConflict();
             var $button = $(e.target);
             var locale = $button.data('locale');
 
-            if (!$button.hasClass('active')) {
-                self.languages[locale].hide = true;
-            } else {
-                self.languages[locale].hide = false;
-            }
-
-            self.renderEntries(self.entries);
-        };
-
-        self.filters = function (e) {
-            var $button = $(e.target);
-            var locale = $button.data('locale');
-
-            if (!$button.hasClass('active')) {
-                self.languages[locale].hide = true;
-            } else {
-                self.languages[locale].hide = false;
-            }
+            self.languages[locale].hide = !$button.hasClass('active');
 
             self.renderEntries(self.entries);
         };
@@ -304,17 +295,14 @@ var underscore = _.noConflict();
             var tr = $(e.target);
             if (tr.children('.input').length) return false;
 
-            if (tr.parent('.field').hasClass('original')) {
-                return false
-            }
+            if (tr.parent('.field').hasClass('original')) return false;
 
             var $container = $(e.target).parents('.entry');
             var hash = $container.data('id');
             var entry = self.entries[hash];
+            var message = tr.html();
 
             $container.addClass('edit');
-
-            var message = tr.html();
 
             if (entry.multiline) {
                 tr.html('<textarea class="input">' + _.escape(message) + '</textarea>');
@@ -337,8 +325,7 @@ var underscore = _.noConflict();
 
             $container.removeClass('edit');
 
-            var message = _.unescape($input.val());
-            message = message.trim();
+            var message = _.unescape($input.val()).trim();
 
             var $tr = $input.parent('.translation');
             var locale = $tr.data('locale');
@@ -346,15 +333,18 @@ var underscore = _.noConflict();
             var entry = self.entries[hash];
 
             if (message.length) {
-                $tr.html(message);
-
-                self.entries[hash].locale[locale] = message;
+                var oldMessage = entry.locale[locale];
+                entry.locale[locale] = message;
 
                 self.updateEntry(hash, locale, function (err) {
-                    if (err) return alert(err);
+                    if (err) {
+                        entry.locale[locale] = oldMessage;
+                    }
+
+                    $tr.html(entry.locale[locale]);
                 });
             } else {
-                $tr.html(self.entries[hash].locale[locale] || '');
+                $tr.html(entry.locale[locale] || '');
             }
         };
 
@@ -365,35 +355,24 @@ var underscore = _.noConflict();
             var hash = $container.data('id');
 
             var entry = self.entries[hash];
-            entry.multiline = entry.multiline ? false : true;
 
-            if (entry.multiline) {
-                $container.addClass('multiline');
-            } else {
-                $container.removeClass('multiline');
-            }
+            toggle();
 
-            self.updateEntry(hash, null, function () {
+            self.updateEntry(hash, null, function (err) {
+                if (err) {
+                    toggle();
+                }
             });
-        };
 
-        self.toggleMultiline = function (e) {
-            e.preventDefault();
+            function toggle() {
+                entry.multiline = entry.multiline ? false : true;
 
-            var $container = $(e.target).parents('.entry');
-            var hash = $container.data('id');
-
-            var entry = self.entries[hash];
-            entry.multiline = entry.multiline ? false : true;
-
-            if (entry.multiline) {
-                $container.addClass('multiline');
-            } else {
-                $container.removeClass('multiline');
+                if (entry.multiline) {
+                    $container.addClass('multiline');
+                } else {
+                    $container.removeClass('multiline');
+                }
             }
-
-            self.updateEntry(hash, null, function () {
-            });
         };
 
         self.remove = function (e) {
@@ -408,10 +387,9 @@ var underscore = _.noConflict();
 
             if (confirm(_.template(self.removeEntryMessage, {message: message}))) {
                 self.removeEntry(hash, function (err) {
-                    if (err) return alert(err);
+                    if (err) return false;
 
                     delete self.entries[hash];
-
                     $container.remove();
                 });
             }
@@ -462,57 +440,7 @@ var underscore = _.noConflict();
             var entry = {
                 hash: hash,
                 locale: {}
-            }
-
-            if (locale) {
-                entry.locale[locale] = self.entries[hash].locale[locale];
-            }
-
-            entry.multiline = self.entries[hash].multiline;
-
-            $.ajax({
-                url: self.getEntryUrl(),
-                type: 'PUT',
-                dataType: "json",
-                data: entry
-
-            }).done(function (data) {
-                callback(null, data);
-            }).fail(function (jqXHR) {
-                callback(jqXHR.statusText);
-            });
-        };
-
-        self.updateEntry = function (hash, locale, callback) {
-            var entry = {
-                hash: hash,
-                locale: {}
-            }
-
-            if (locale) {
-                entry.locale[locale] = self.entries[hash].locale[locale];
-            }
-
-            entry.multiline = self.entries[hash].multiline;
-
-            $.ajax({
-                url: self.getEntryUrl(),
-                type: 'PUT',
-                dataType: "json",
-                data: entry
-
-            }).done(function (data) {
-                callback(null, data);
-            }).fail(function (jqXHR) {
-                callback(jqXHR.statusText);
-            });
-        };
-
-        self.updateEntry = function (hash, locale, callback) {
-            var entry = {
-                hash: hash,
-                locale: {}
-            }
+            };
 
             if (locale) {
                 entry.locale[locale] = self.entries[hash].locale[locale];
@@ -545,18 +473,6 @@ var underscore = _.noConflict();
             });
         };
 
-        self.removeLocale = function (hash, locale, callback) {
-            $.ajax({
-                url: self.getEntryUrl() + hash + '/' + locale,
-                type: 'DELETE',
-                dataType: 'json'
-            }).done(function () {
-                callback(null);
-            }).fail(function (jqXHR) {
-                callback(jqXHR.statusText);
-            });
-        };
-
         self.exports = function (e) {
             var url = self.getBaseUrl() + '/export';
             var $self = $(e.target);
@@ -581,8 +497,6 @@ var underscore = _.noConflict();
                 }).fail(function (jqXHR) {
                     if (jqXHR.status == 405) {
                         alert('Export to Transifex is not configured. \n Please contact the administrator.');
-                    } else {
-                        alert('Data can not be exported to Transifex. \n Please contact the administrator.');
                     }
                 }).always(function () {
                     self.enableExportImport();
@@ -614,8 +528,6 @@ var underscore = _.noConflict();
                 }).fail(function (jqXHR) {
                     if (jqXHR.status == 405) {
                         alert('Import from Transifex is not configured. \n Please contact the administrator.');
-                    } else {
-                        alert('Data can not be imported from Transifex. \n Please contact the administrator.');
                     }
                 }).always(function () {
                     self.enableExportImport();
@@ -643,13 +555,7 @@ var underscore = _.noConflict();
         console.log('app initialization');
 
         _.templateSettings = {
-            evaluate: /\{\{ ([\s\S]+?) \}\}/g,            // {{# console.log("blah") }}
-            // evaluate:    /\{\{#(.+?)\}\}/g,            // {{# console.log("blah") }}
-            // interpolate: /\{\{[^#\{]([\s\S]+?)[^\}]\}\}/g,  // {{ title }}
-            //interpolate: /\{\{(.+?)\}\}/g,
-            //escape:      /\{\{\{([\s\S]+?)\}\}\}/g,         // {{{ title }}}
-
-            //evaluate:    /\{\{ (.+?) \}\}/g,
+            evaluate: /\{\{ ([\s\S]+?) \}\}/g, // {{# console.log("blah") }}
             interpolate: /\{\{=(.+?)\}\}/g,
             escape: /\{\{-(.+?)\}\}/g
         };

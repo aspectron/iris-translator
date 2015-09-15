@@ -1,5 +1,5 @@
 {
-    "name": "zetta-translator",
+    "name": "iris-translator",
     "description": "Language Translation Framework for Applications & Web Sites",
     "version": "0.0.5",
     "author": {
@@ -20,7 +20,7 @@
         "mkpath": "0.1.0",
         "chokidar": "0.8.2",
         "request": "2.36.0",
-        "zetta-utils": "0.1.1"
+        "iris-utils": "0.1.1"
     },
     "main": "./lib/translator.js",
     "repository": {
